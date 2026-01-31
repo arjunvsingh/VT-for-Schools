@@ -19,13 +19,14 @@ export function TopBar() {
             </div>
 
             <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-off-white/5 p-1 backdrop-blur-md">
-                {['Dashboard', 'Districts', 'Schools', 'Teachers'].map((item) => {
+                {['Dashboard', 'Districts', 'Schools', 'Teachers', 'Students'].map((item) => {
                     const getLink = (name: string) => {
                         switch (name) {
                             case 'Dashboard': return '/';
                             case 'Districts': return '/district/1';
                             case 'Schools': return '/school/s1';
                             case 'Teachers': return '/teacher/t1';
+                            case 'Students': return '/student/st1';
                             default: return '/';
                         }
                     };
@@ -42,13 +43,25 @@ export function TopBar() {
             </div>
 
             <div className="pointer-events-auto flex items-center gap-3">
-                <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-off-white/5 backdrop-blur-md hover:bg-off-white/10 transition">
+                <button
+                    aria-label="Search"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-off-white/5 backdrop-blur-md hover:bg-off-white/10 transition"
+                >
                     <Search className="h-4 w-4" />
                 </button>
-                <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-off-white/5 backdrop-blur-md hover:bg-off-white/10 transition">
+                <button
+                    aria-label="Notifications"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-off-white/5 backdrop-blur-md hover:bg-off-white/10 transition"
+                >
                     <Bell className="h-4 w-4" />
                 </button>
-                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-acid-lime to-cyan-500" />
+                <button
+                    aria-label="Open menu"
+                    className="flex md:hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-off-white/5 backdrop-blur-md hover:bg-off-white/10 transition"
+                >
+                    <Menu className="h-4 w-4" />
+                </button>
+                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-acid-lime to-cyan-500" aria-label="User profile" />
             </div>
         </nav>
     );

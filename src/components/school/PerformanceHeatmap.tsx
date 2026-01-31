@@ -22,8 +22,7 @@ const DATA = generateHeatmapData();
 export default function PerformanceHeatmap() {
     return (
         <div className="w-full h-full flex flex-col">
-            <div className="flex justify-between mb-4">
-                <h3 className="text-lg font-serif italic">Academic Heatmap</h3>
+            <div className="flex justify-end mb-4">
                 <div className="flex items-center gap-2 text-xs text-off-white/40">
                     <span>LOW</span>
                     <div className="w-16 h-2 rounded bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" />

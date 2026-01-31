@@ -1,0 +1,312 @@
+'use client';
+
+import { create } from 'zustand';
+
+// ============== Types ==============
+
+export interface District {
+    id: string;
+    name: string;
+    schools: string[]; // school IDs
+    performance: number;
+    status: 'good' | 'warning' | 'alert';
+    totalStudents: number;
+    totalTeachers: number;
+}
+
+export interface School {
+    id: string;
+    districtId: string;
+    name: string;
+    grade: string;
+    principal: string;
+    students: number;
+    teachers: number;
+    performance: number;
+    attendance: number;
+    status: 'good' | 'warning' | 'alert';
+}
+
+export interface Teacher {
+    id: string;
+    schoolId: string;
+    name: string;
+    initials: string;
+    department: string;
+    role: string;
+    rating: number;
+    classes: number;
+    studentCount: number;
+    tenure: number;
+    status: 'active' | 'inactive' | 'flagged';
+    awards: string[];
+}
+
+export interface Student {
+    id: string;
+    schoolId: string;
+    name: string;
+    initials: string;
+    grade: number;
+    gpa: number;
+    subjects: string[];
+    badges: string[];
+    status: 'excelling' | 'on-track' | 'at-risk';
+}
+
+export interface Insight {
+    id: string;
+    entityType: 'school' | 'teacher' | 'student';
+    entityId: string;
+    severity: 'critical' | 'warning' | 'info' | 'success';
+    title: string;
+    description: string;
+    actionLabel?: string;
+    actionPath?: string;
+}
+
+// ============== Mock Data ==============
+
+const mockDistricts: Record<string, District> = {
+    '1': {
+        id: '1',
+        name: 'Central Valley',
+        schools: ['s1', 's2', 's3', 's4', 's5'],
+        performance: 88,
+        status: 'good',
+        totalStudents: 5190,
+        totalTeachers: 312,
+    },
+    '2': {
+        id: '2',
+        name: 'Bay Area North',
+        schools: ['s6', 's7'],
+        performance: 92,
+        status: 'good',
+        totalStudents: 3200,
+        totalTeachers: 198,
+    },
+};
+
+const mockSchools: Record<string, School> = {
+    's1': {
+        id: 's1',
+        districtId: '1',
+        name: 'Lincoln High School',
+        grade: 'A-',
+        principal: 'Dr. S. Carter',
+        students: 1240,
+        teachers: 54,
+        performance: 92,
+        attendance: 94,
+        status: 'good',
+    },
+    's2': {
+        id: 's2',
+        districtId: '1',
+        name: 'Roosevelt Elementary',
+        grade: 'C+',
+        principal: 'Ms. J. Williams',
+        students: 850,
+        teachers: 38,
+        performance: 78,
+        attendance: 88,
+        status: 'alert',
+    },
+    's3': {
+        id: 's3',
+        districtId: '1',
+        name: 'Washington Middle',
+        grade: 'B+',
+        principal: 'Mr. R. Thompson',
+        students: 1100,
+        teachers: 48,
+        performance: 88,
+        attendance: 91,
+        status: 'good',
+    },
+    's4': {
+        id: 's4',
+        districtId: '1',
+        name: 'Jefferson High',
+        grade: 'A',
+        principal: 'Dr. M. Chen',
+        students: 1400,
+        teachers: 62,
+        performance: 95,
+        attendance: 96,
+        status: 'good',
+    },
+    's5': {
+        id: 's5',
+        districtId: '1',
+        name: 'Adams Elementary',
+        grade: 'B-',
+        principal: 'Ms. L. Garcia',
+        students: 600,
+        teachers: 28,
+        performance: 81,
+        attendance: 89,
+        status: 'warning',
+    },
+};
+
+const mockTeachers: Record<string, Teacher> = {
+    't1': {
+        id: 't1',
+        schoolId: 's1',
+        name: 'Sarah Carter',
+        initials: 'SC',
+        department: 'Science',
+        role: 'Physics Department Head',
+        rating: 4.9,
+        classes: 5,
+        studentCount: 142,
+        tenure: 4,
+        status: 'active',
+        awards: ['District Excellence 2024', 'Innovator Grant'],
+    },
+    't2': {
+        id: 't2',
+        schoolId: 's1',
+        name: 'John Doe',
+        initials: 'JD',
+        department: 'Math',
+        role: 'Math Teacher',
+        rating: 3.2,
+        classes: 4,
+        studentCount: 98,
+        tenure: 2,
+        status: 'flagged',
+        awards: [],
+    },
+    't3': {
+        id: 't3',
+        schoolId: 's2',
+        name: 'Maria Lopez',
+        initials: 'ML',
+        department: 'English',
+        role: 'English Department Head',
+        rating: 4.5,
+        classes: 4,
+        studentCount: 112,
+        tenure: 8,
+        status: 'active',
+        awards: ['State Teaching Award 2023'],
+    },
+};
+
+const mockStudents: Record<string, Student> = {
+    'st1': {
+        id: 'st1',
+        schoolId: 's1',
+        name: 'John Smith',
+        initials: 'JS',
+        grade: 11,
+        gpa: 3.8,
+        subjects: ['AP Physics', 'Calculus', 'English Lit', 'History', 'Spanish III', 'Gym'],
+        badges: ['Honor Roll', 'Varsity Team'],
+        status: 'excelling',
+    },
+    'st2': {
+        id: 'st2',
+        schoolId: 's1',
+        name: 'Alex Kim',
+        initials: 'AK',
+        grade: 10,
+        gpa: 2.1,
+        subjects: ['Algebra II', 'English', 'Biology', 'History', 'Art'],
+        badges: [],
+        status: 'at-risk',
+    },
+};
+
+const mockInsights: Insight[] = [
+    {
+        id: 'i1',
+        entityType: 'school',
+        entityId: 's1',
+        severity: 'critical',
+        title: 'Math Dept Underperformance',
+        description: '3 teachers flagged for support intervention req.',
+        actionLabel: 'Request Bridge',
+        actionPath: '/teacher/t2',
+    },
+    {
+        id: 'i2',
+        entityType: 'school',
+        entityId: 's1',
+        severity: 'info',
+        title: 'Science Fair Approaching',
+        description: 'Budget approval pending for 12 kits.',
+        actionLabel: 'Approve',
+    },
+    {
+        id: 'i3',
+        entityType: 'school',
+        entityId: 's2',
+        severity: 'critical',
+        title: 'Low Math Scores',
+        description: 'Below district average by 15%',
+        actionLabel: 'View Details',
+        actionPath: '/school/s2',
+    },
+];
+
+// ============== Store ==============
+
+interface DataState {
+    districts: Record<string, District>;
+    schools: Record<string, School>;
+    teachers: Record<string, Teacher>;
+    students: Record<string, Student>;
+    insights: Insight[];
+
+    // Selectors
+    getDistrict: (id: string) => District | undefined;
+    getSchool: (id: string) => School | undefined;
+    getTeacher: (id: string) => Teacher | undefined;
+    getStudent: (id: string) => Student | undefined;
+    getSchoolsForDistrict: (districtId: string) => School[];
+    getTeachersForSchool: (schoolId: string) => Teacher[];
+    getStudentsForSchool: (schoolId: string) => Student[];
+    getInsightsForEntity: (entityType: string, entityId: string) => Insight[];
+}
+
+export const useDataStore = create<DataState>((set, get) => ({
+    districts: mockDistricts,
+    schools: mockSchools,
+    teachers: mockTeachers,
+    students: mockStudents,
+    insights: mockInsights,
+
+    getDistrict: (id: string) => get().districts[id],
+
+    getSchool: (id: string) => get().schools[id],
+
+    getTeacher: (id: string) => get().teachers[id],
+
+    getStudent: (id: string) => get().students[id],
+
+    getSchoolsForDistrict: (districtId: string) => {
+        const district = get().districts[districtId];
+        if (!district) return [];
+        return district.schools
+            .map(id => get().schools[id])
+            .filter(Boolean) as School[];
+    },
+
+    getTeachersForSchool: (schoolId: string) => {
+        return Object.values(get().teachers).filter(t => t.schoolId === schoolId);
+    },
+
+    getStudentsForSchool: (schoolId: string) => {
+        return Object.values(get().students).filter(s => s.schoolId === schoolId);
+    },
+
+    getInsightsForEntity: (entityType: string, entityId: string) => {
+        return get().insights.filter(
+            i => i.entityType === entityType && i.entityId === entityId
+        );
+    },
+}));

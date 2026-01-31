@@ -17,8 +17,7 @@ const data = [
 export default function ProjectionGraph() {
     return (
         <div className="w-full h-full flex flex-col">
-            <div className="flex justify-between mb-4">
-                <h3 className="text-lg font-serif italic">Year-End Projection</h3>
+            <div className="flex justify-end mb-4">
                 <div className="px-2 py-1 bg-acid-lime/10 text-acid-lime text-xs rounded border border-acid-lime/20 animate-pulse">
                     Trending Up
                 </div>

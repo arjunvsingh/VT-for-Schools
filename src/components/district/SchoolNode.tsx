@@ -3,16 +3,31 @@ import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Users, TrendingUp, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
-// We can reuse Bento card styling logic here but kept minimal for nodes
-export default memo(function SchoolNode({ data }: { data: any }) {
+interface SchoolNodeData {
+    id: string;
+    label: string;
+    students: number;
+    performance: number;
+    status: 'good' | 'warning' | 'alert';
+}
+
+export default memo(function SchoolNode({ data }: { data: SchoolNodeData }) {
+    const router = useRouter();
     const isAlert = data.status === 'alert';
 
+    const handleClick = () => {
+        router.push(`/school/${data.id.toLowerCase().replace('sch-', 's')}`);
+    };
+
     return (
-        <div className={cn(
-            "min-w-[240px] bg-stone-black border rounded-xl p-4 shadow-xl transition-all duration-300 hover:scale-105",
-            isAlert ? "border-red-500/50 shadow-red-500/20" : "border-white/10 hover:border-acid-lime/50"
-        )}>
+        <div
+            onClick={handleClick}
+            className={cn(
+                "min-w-[240px] bg-stone-black border rounded-xl p-4 shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer",
+                isAlert ? "border-red-500/50 shadow-red-500/20" : "border-white/10 hover:border-acid-lime/50"
+            )}>
             {/* Target Handle */}
             <Handle type="target" position={Position.Top} className="!bg-off-white/20 !w-3 !h-1 !rounded-full !min-h-[4px]" />
 
@@ -46,3 +61,4 @@ export default memo(function SchoolNode({ data }: { data: any }) {
         </div>
     );
 });
+

@@ -1,5 +1,5 @@
 'use client';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRef } from 'react';
 
 const EVENTS = [
@@ -13,7 +13,6 @@ const EVENTS = [
 
 export default function TeacherTimeline() {
     const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({ container: containerRef });
 
     return (
         <div className="relative h-full flex flex-col">

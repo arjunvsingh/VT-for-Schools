@@ -173,14 +173,15 @@ export default function CaliforniaCubes({
             const colHit = Math.floor((clientX - rect.left) / cellW);
             const rowHit = Math.floor((clientY - rect.top) / cellH);
 
-            // Check if valid cube was clicked (exists in grid)
-            // Implementation: find the specific cube element and verify it exists
-            // But we can just animate visible cubes
+            // Check if this is a valid cube (exists in grid)
+            const isValidCube = rowHit >= 0 && rowHit < gridRows &&
+                colHit >= 0 && colHit < gridCols &&
+                CALIFORNIA_GRID[rowHit]?.[colHit] === 1;
 
-            // Navigate to district page on click
-            // Simulate zoom first? For now, direct route push after short delay?
-            // User asked: "poll page should zoom in... open a new page which leads to district page"
-            // We will trigger animation and then route.
+            if (!isValidCube) return;
+
+            // Calculate district ID from grid position
+            const districtId = rowHit * gridCols + colHit + 1;
 
             const baseRingDelay = 0.15;
             const baseAnimDur = 0.3;
@@ -223,10 +224,9 @@ export default function CaliforniaCubes({
                     });
                 });
 
-            // Navigation after effect
-            // NOTE: Hardcoded to district 1 for demo
+            // Navigation after effect with dynamic district ID
             setTimeout(() => {
-                router.push('/district/1');
+                router.push(`/district/${districtId}`);
             }, 200);
         },
         [rippleOnClick, gridCols, gridRows, faceColor, rippleColor, rippleSpeed, router]
