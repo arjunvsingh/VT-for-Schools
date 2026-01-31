@@ -50,7 +50,7 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                     </div>
                 </div>
 
-                <BentoCard title="Awards" icon={<Award className="text-yellow-400" />}>
+                <BentoCard title="Awards" icon={<Award className="text-yellow-400" />} glow>
                     <div className="flex flex-col gap-2 mt-2">
                         <div className="flex items-center gap-2 text-sm p-2 bg-yellow-400/10 rounded border border-yellow-400/20 text-yellow-100">
                             <Star className="w-3 h-3 text-yellow-400" /> District Excellence 2024

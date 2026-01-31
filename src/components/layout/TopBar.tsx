@@ -19,15 +19,26 @@ export function TopBar() {
             </div>
 
             <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-off-white/5 p-1 backdrop-blur-md">
-                {['Dashboard', 'Districts', 'Schools', 'Teachers'].map((item) => (
-                    <Link
-                        key={item}
-                        href={item === 'Dashboard' ? '/' : `/${item.toLowerCase().slice(0, -1)}`}
-                        className="rounded-full px-6 py-2 text-sm font-medium transition-colors hover:bg-off-white hover:text-stone-black"
-                    >
-                        {item}
-                    </Link>
-                ))}
+                {['Dashboard', 'Districts', 'Schools', 'Teachers'].map((item) => {
+                    const getLink = (name: string) => {
+                        switch (name) {
+                            case 'Dashboard': return '/';
+                            case 'Districts': return '/district/1';
+                            case 'Schools': return '/school/s1';
+                            case 'Teachers': return '/teacher/t1';
+                            default: return '/';
+                        }
+                    };
+                    return (
+                        <Link
+                            key={item}
+                            href={getLink(item)}
+                            className="rounded-full px-6 py-2 text-sm font-medium transition-colors hover:bg-off-white hover:text-stone-black"
+                        >
+                            {item}
+                        </Link>
+                    );
+                })}
             </div>
 
             <div className="pointer-events-auto flex items-center gap-3">
