@@ -15,15 +15,16 @@
     "@xyflow/react": "^12.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
+    "gsap": "^3.12.5",
     "lenis": "^1.0.42",
     "lucide-react": "^0.363.0",
     "next": "14.2.14",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^3.7.0",
     "tailwind-merge": "^2.2.0",
     "three": "^0.160.0",
-    "zustand": "^4.5.0",
-    "gsap": "^3.12.5"
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
