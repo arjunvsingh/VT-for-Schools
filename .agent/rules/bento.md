@@ -1,16 +1,9 @@
-@import "tailwindcss";
+---
+trigger: always_on
+---
 
-@theme {
-  --color-stone-black: #0C0A09;
-  --color-acid-lime: #D4F268;
-  --color-warm-charcoal: #1C1917;
-  --color-off-white: #E7E5E4;
-
-  --font-sans: var(--font-instrument-sans);
-  --font-serif: var(--font-newsreader);
-  --font-newsreader: var(--font-newsreader);
-  --font-instrument-sans: var(--font-instrument-sans);
-}
+Code:
+npx shadcn@latest add @react-bits/MagicBento-JS-TW
 
 :root {
   --hue: 27;
@@ -21,43 +14,9 @@
   --purple-border: rgba(132, 0, 255, 0.8);
   --border-color: #392e4e;
   --background-dark: #060010;
+  color-scheme: light dark;
 }
 
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
-/* Noise Overlay */
-.noise-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-/* Bento CSS */
 .card-grid {
   display: grid;
   gap: 0.5em;
@@ -72,6 +31,7 @@ html.lenis, html.lenis body {
   justify-content: space-between;
   position: relative;
   aspect-ratio: 4/3;
+  min-height: 200px;
   width: 100%;
   max-width: 100%;
   padding: 1.25em;
@@ -174,10 +134,23 @@ html.lenis, html.lenis body {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* Specific Bento Grid Layout Overrides - Custom for implementation */
+  .magic-bento-card:nth-child(3) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .magic-bento-card:nth-child(4) {
+    grid-column: 1 / span 2;
+    grid-row: 2 / span 2;
+  }
+
+  .magic-bento-card:nth-child(6) {
+    grid-column: 4;
+    grid-row: 3;
+  }
 }
 
-/* Border glow effect for Bento */
+/* Border glow effect */
 .magic-bento-card--border-glow::after {
   content: '';
   position: absolute;
@@ -214,79 +187,40 @@ html.lenis, html.lenis body {
     0 0 30px var(--purple-glow);
 }
 
-/* Cubes CSS */
-:root {
-  --col-gap: 5%;
-  --row-gap: 5%;
-  --cube-perspective: 99999999px;
-  --cube-face-border: 1px solid #fff;
-  --cube-face-bg: #060010;
-}
-
-.default-animation {
+.particle-container {
   position: relative;
-  /* width: 50%; remove fixed width for component flexibility */
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  height: auto;
+  overflow: hidden;
 }
 
-.default-animation--scene {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  column-gap: var(--col-gap);
-  row-gap: var(--row-gap);
-  perspective: var(--cube-perspective);
-  grid-auto-rows: 1fr;
-}
-
-.cube {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-  transform-style: preserve-3d;
-}
-
-.cube::before {
+.particle::before {
   content: '';
   position: absolute;
-  top: -36px;
-  right: -36px;
-  bottom: -36px;
-  left: -36px;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: rgba(132, 0, 255, 0.2);
+  border-radius: 50%;
+  z-index: -1;
 }
 
-.default-animation .cube-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--cube-face-bg);
-  border: var(--cube-face-border);
-  opacity: 1;
+.particle-container:hover {
+  box-shadow:
+    0 4px 20px rgba(46, 24, 78, 0.2),
+    0 0 30px var(--purple-glow);
 }
 
-.default-animation .cube-face--top {
-  transform: translateY(-50%) rotateX(90deg);
+/* Global spotlight styles */
+.global-spotlight {
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  z-index: 200 !important;
+  pointer-events: none;
 }
 
-.default-animation .cube-face--bottom {
-  transform: translateY(50%) rotateX(-90deg);
+.bento-section {
+  position: relative;
+  user-select: none;
 }
 
-.default-animation .cube-face--left {
-  transform: translateX(-50%) rotateY(-90deg);
-}
 
-.default-animation .cube-face--right {
-  transform: translateX(50%) rotateY(90deg);
-}
-
-.default-animation .cube-face--back,
-.default-animation .cube-face--front {
-  transform: rotateY(-90deg) translateX(50%) rotateY(90deg);
-}
