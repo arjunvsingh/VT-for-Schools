@@ -49,12 +49,12 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                             </Link>
                         </div>
 
-                        <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg flex items-center justify-between">
+                        <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between">
                             <div className="flex flex-col">
-                                <span className="text-sm font-bold text-purple-200">Science Fair Approaching</span>
-                                <span className="text-xs text-purple-200/60">Budget approval pending for 12 kits.</span>
+                                <span className="text-sm font-bold text-cyan-200">Science Fair Approaching</span>
+                                <span className="text-xs text-cyan-200/60">Budget approval pending for 12 kits.</span>
                             </div>
-                            <button className="px-3 py-1 bg-purple-500 text-white text-xs rounded hover:bg-purple-400 transition-colors">
+                            <button className="px-3 py-1 bg-cyan-500 text-white text-xs rounded hover:bg-cyan-400 transition-colors">
                                 Approve
                             </button>
                         </div>
@@ -106,14 +106,14 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                 <BentoCard
                     title="Faculty Performance"
                     description="Active Staff Overview"
-                    className="lg:col-span-2 h-[200px]"
-                    icon={<BookOpen className="text-purple-400" />}
+                    className="lg:col-span-1 h-[200px]"
+                    icon={<BookOpen className="text-cyan-400" />}
                     glow
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 h-full overflow-y-auto no-scrollbar">
                         <Link href="/teacher/t1" className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-200 font-serif italic border border-purple-500/30">SC</div>
+                                <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-200 font-serif italic border border-cyan-500/30">SC</div>
                                 <div className="flex flex-col">
                                     <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">Sarah Carter</span>
                                     <span className="text-[10px] text-off-white/60">Physics Head</span>
@@ -139,7 +139,40 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                             </div>
                         </div>
                     </div>
-                </BentoCard>
+                    <BentoCard
+                        title="Student Performance"
+                        description="Top Achievers & At-Risk"
+                        className="lg:col-span-1 h-[200px]"
+                        icon={<Users className="text-acid-lime" />}
+                        glow
+                    >
+                        <div className="flex flex-col gap-3 mt-2 h-full overflow-y-auto no-scrollbar">
+                            <Link href="/student/st1" className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-200 font-mono text-xs border border-cyan-500/30">JS</div>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">John Smith</span>
+                                        <span className="text-[10px] text-off-white/60">Grade 11</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-acid-lime font-mono text-xs">3.8 GPA</span>
+                                </div>
+                            </Link>
+                            <div className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg opacity-50">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-200 font-mono text-xs border border-orange-500/30">AK</div>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-sm">Alex Kim</span>
+                                        <span className="text-[10px] text-off-white/60">Grade 10</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                    <span className="text-orange-400 font-mono text-xs">2.1 GPA</span>
+                                </div>
+                            </div>
+                        </div>
+                    </BentoCard>
             </section>
         </PageTransition>
     );

@@ -102,7 +102,7 @@ export default function Home() {
             title="Teacher Retention"
             colSpan={1}
             description="Avg. Tenure"
-            icon={<GraduationCap className="text-purple-400" />}
+            icon={<GraduationCap className="text-cyan-400" />}
             className="h-[140px]"
             glow
           >
