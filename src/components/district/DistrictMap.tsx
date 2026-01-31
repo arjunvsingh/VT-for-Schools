@@ -57,6 +57,7 @@ export default function DistrictMap() {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 fitView
+                fitViewOptions={{ padding: 0.2 }}
                 attributionPosition="bottom-right"
             >
                 <Background color="#D4F268" gap={20} size={1} style={{ opacity: 0.05 }} />

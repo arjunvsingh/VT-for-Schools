@@ -22,13 +22,26 @@ export function BentoCard({
     rowSpan = 1,
     glow = false,
 }: BentoCardProps) {
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        e.currentTarget.style.setProperty('--glow-x', `${x}px`);
+        e.currentTarget.style.setProperty('--glow-y', `${y}px`);
+        e.currentTarget.style.setProperty('--glow-intensity', '1');
+    };
+
     return (
         <div
             className={cn(
-                'magic-bento-card',
+                'magic-bento-card group',
                 glow && 'magic-bento-card--border-glow',
                 className
             )}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.setProperty('--glow-intensity', '0');
+            }}
             style={{
                 gridColumn: `span ${colSpan}`,
                 gridRow: `span ${rowSpan}`,

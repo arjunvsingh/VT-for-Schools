@@ -43,16 +43,16 @@ export default function DistrictPage({ params }: { params: { id: string } }) {
                     <BentoCard
                         title="District Insights"
                         icon={<TrendingUp className="text-acid-lime" />}
-                        className="min-h-[180px]"
+                        className="h-[180px]"
                         glow
                     >
-                        <div className="mt-4 flex flex-col gap-4">
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-off-white/60">Avg. Performance</span>
-                                <span className="font-mono text-xl">88%</span>
+                        <div className="flex-1 w-full h-full bg-gradient-to-br from-acid-lime/5 to-transparent rounded-xl flex flex-col justify-end p-2 gap-2">
+                            <div className="flex justify-between items-end">
+                                <span className="text-4xl font-serif text-acid-lime">88%</span>
+                                <span className="text-xs text-off-white/60 mb-1">Avg. Performance</span>
                             </div>
-                            <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                                <div className="h-full bg-acid-lime w-[88%]" />
+                            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div className="h-full bg-acid-lime w-[88%] shadow-[0_0_10px_rgba(212,242,104,0.5)]" />
                             </div>
                         </div>
                     </BentoCard>
@@ -60,33 +60,41 @@ export default function DistrictPage({ params }: { params: { id: string } }) {
                     <BentoCard
                         title="Active Alerts"
                         icon={<AlertTriangle className="text-red-400" />}
-                        className="min-h-[160px]"
+                        className="h-[160px]"
+                        glow
                     >
-                        <div className="flex flex-col gap-2 mt-2">
-                            <div className="bg-red-500/10 border border-red-500/20 p-2 rounded-lg text-xs flex items-center gap-2 text-red-200">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                                Roosevelt Elem: Low Math Scores
-                            </div>
-                            <div className="bg-orange-500/10 border border-orange-500/20 p-2 rounded-lg text-xs flex items-center gap-2 text-orange-200">
-                                <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                                Adams Element: Staff Shortage
-                            </div>
+                        <div className="flex flex-col gap-2 mt-auto">
+                            <Link href="/school/s2" className="flex items-center gap-3 p-2 rounded-lg bg-red-400/5 border border-red-400/10 hover:bg-red-400/10 transition-colors">
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-red-100 font-medium">Roosevelt Elem</span>
+                                    <span className="text-[10px] text-red-400/60">Low Math Scores</span>
+                                </div>
+                            </Link>
+                            <Link href="/school/s5" className="flex items-center gap-3 p-2 rounded-lg bg-orange-400/5 border border-orange-400/10 hover:bg-orange-400/10 transition-colors">
+                                <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-orange-100 font-medium">Adams Element</span>
+                                    <span className="text-[10px] text-orange-400/60">Staff Shortage</span>
+                                </div>
+                            </Link>
                         </div>
                     </BentoCard>
 
                     <BentoCard
                         title="Quick Actions"
                         icon={<Users className="text-blue-400" />}
-                        className="flex-1"
+                        className="h-[140px]"
+                        glow
                     >
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                            <button className="p-3 bg-white/5 hover:bg-white/10 rounded-lg text-xs transition-colors border border-white/5">
-                                Generate Report
+                        <div className="grid grid-cols-2 gap-2 mt-auto h-full content-end">
+                            <button className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 hover:text-acid-lime rounded-lg text-xs transition-all border border-white/5">
+                                Report
                             </button>
-                            <button className="p-3 bg-white/5 hover:bg-white/10 rounded-lg text-xs transition-colors border border-white/5">
-                                Email Principals
+                            <button className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 hover:text-acid-lime rounded-lg text-xs transition-all border border-white/5">
+                                Email
                             </button>
-                            <button className="p-3 bg-white/5 hover:bg-white/10 rounded-lg text-xs transition-colors border border-white/5 col-span-2">
+                            <button className="col-span-2 flex items-center justify-center p-2 bg-acid-lime/10 hover:bg-acid-lime/20 text-acid-lime border border-acid-lime/20 rounded-lg text-xs transition-all">
                                 Schedule Review
                             </button>
                         </div>

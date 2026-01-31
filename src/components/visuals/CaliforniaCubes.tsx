@@ -227,7 +227,7 @@ export default function CaliforniaCubes({
             // NOTE: Hardcoded to district 1 for demo
             setTimeout(() => {
                 router.push('/district/1');
-            }, 800);
+            }, 200);
         },
         [rippleOnClick, gridCols, gridRows, faceColor, rippleColor, rippleSpeed, router]
     );
@@ -301,10 +301,14 @@ export default function CaliforniaCubes({
         '--cube-face-border': borderStyle,
         '--cube-face-bg': faceColor,
         '--cube-face-shadow': shadow === true ? '0 0 6px rgba(0,0,0,.5)' : shadow || 'none',
+        ...(cubeSize ? {
+            width: `${gridCols * cubeSize + (gridCols - 1) * (typeof cellGap === 'number' ? cellGap : 0)}px`,
+            height: `${gridRows * cubeSize + (gridRows - 1) * (typeof cellGap === 'number' ? cellGap : 0)}px`,
+        } : {})
     } as React.CSSProperties;
 
     return (
-        <div className="default-animation h-full w-full relative" style={wrapperStyle}>
+        <div className={cn("default-animation relative", !cubeSize && "h-full w-full")} style={wrapperStyle}>
             <div ref={sceneRef} className="default-animation--scene" style={sceneStyle}>
                 {CALIFORNIA_GRID.map((row, rIdx) =>
                     row.map((cell, cIdx) => {

@@ -21,9 +21,11 @@
   --purple-border: rgba(132, 0, 255, 0.8);
   --border-color: #392e4e;
   --background-dark: #060010;
+  --lime-glow: rgba(212, 242, 104, 0.4);
 }
 
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -177,18 +179,18 @@ html.lenis, html.lenis body {
   /* Specific Bento Grid Layout Overrides - Custom for implementation */
 }
 
+
+
 /* Border glow effect for Bento */
 .magic-bento-card--border-glow::after {
   content: '';
   position: absolute;
   inset: 0;
   padding: 6px;
-  background: radial-gradient(
-    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-    rgba(132, 0, 255, calc(var(--glow-intensity) * 0.8)) 0%,
-    rgba(132, 0, 255, calc(var(--glow-intensity) * 0.4)) 30%,
-    transparent 60%
-  );
+  background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+      rgba(212, 242, 104, calc(var(--glow-intensity) * 0.8)) 0%,
+      rgba(212, 242, 104, calc(var(--glow-intensity) * 0.4)) 30%,
+      transparent 60%);
   border-radius: inherit;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -210,8 +212,8 @@ html.lenis, html.lenis body {
 
 .magic-bento-card--border-glow:hover {
   box-shadow:
-    0 4px 20px rgba(46, 24, 78, 0.4),
-    0 0 30px var(--purple-glow);
+    0 4px 20px rgba(212, 242, 104, 0.1),
+    0 0 30px var(--lime-glow);
 }
 
 /* Cubes CSS */
