@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import React from 'react';
 import gsap from 'gsap';
 import { CALIFORNIA_GRID } from '@/data/california-shape';
@@ -287,8 +287,12 @@ export default function CaliforniaCubes({
             el.removeEventListener('pointerleave', onLeave);
             el.removeEventListener('click', onClick as EventListener);
 
-            rafRef.current != null && cancelAnimationFrame(rafRef.current);
-            idleTimerRef.current && clearTimeout(idleTimerRef.current);
+            if (rafRef.current != null) {
+                cancelAnimationFrame(rafRef.current);
+            }
+            if (idleTimerRef.current) {
+                clearTimeout(idleTimerRef.current);
+            }
         };
     }, [onPointerMove, onLeave, onClick]);
 

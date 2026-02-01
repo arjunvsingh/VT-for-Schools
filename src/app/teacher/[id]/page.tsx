@@ -3,6 +3,8 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
 import TeacherTimeline from '@/components/teacher/TeacherTimeline';
 import { BackLink } from '@/components/navigation';
+import { NotesButton } from '@/components/ui/NotesPanel';
+import { ActionButton } from '@/components/ui/ActionButton';
 import { Mail, Phone, Award, Star } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
 
@@ -61,6 +63,26 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                         <span className="text-off-white/40">Tenure</span>
                         <span>{tenure} Years</span>
                     </div>
+
+                    {/* Notes Button */}
+                    <div className="w-full mt-4">
+                        <NotesButton entityType="teacher" entityId={params.id} className="w-full justify-center" />
+                    </div>
+
+                    {/* Action button for flagged teachers */}
+                    {status === 'flagged' && (
+                        <div className="w-full mt-2">
+                            <ActionButton
+                                type="request_bridge"
+                                entityType="teacher"
+                                entityId={params.id}
+                                entityName={teacherName}
+                                variant="primary"
+                                size="md"
+                                className="w-full"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <BentoCard title="Awards" icon={<Award className="text-yellow-400" />} glow>

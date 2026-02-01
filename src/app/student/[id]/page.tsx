@@ -2,6 +2,8 @@
 import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { BackLink } from '@/components/navigation';
+import { NotesButton } from '@/components/ui/NotesPanel';
+import { ActionButton } from '@/components/ui/ActionButton';
 import { Book, AlertCircle, CheckCircle } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
 
@@ -41,9 +43,12 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                         </div>
                     </div>
                 </div>
-                <div className="text-right">
-                    <span className="block text-sm text-off-white/40 uppercase tracking-widest">GPA</span>
-                    <span className={`text-4xl font-bold ${gpa >= 3.5 ? 'text-acid-lime' : gpa >= 2.5 ? 'text-off-white' : 'text-orange-400'}`}>{gpa}</span>
+                <div className="flex flex-col items-end gap-2">
+                    <div className="text-right">
+                        <span className="block text-sm text-off-white/40 uppercase tracking-widest">GPA</span>
+                        <span className={`text-4xl font-bold ${gpa >= 3.5 ? 'text-acid-lime' : gpa >= 2.5 ? 'text-off-white' : 'text-orange-400'}`}>{gpa}</span>
+                    </div>
+                    <NotesButton entityType="student" entityId={params.id} />
                 </div>
             </div>
 
@@ -77,6 +82,26 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                         <div className="mt-2 text-sm text-orange-200/80 p-3 bg-orange-400/5 rounded border border-orange-400/10">
                             <p>• English Lit essays submitted late (2 occurrences).</p>
                         </div>
+                        {status === 'at-risk' && (
+                            <div className="mt-3 flex gap-2">
+                                <ActionButton
+                                    type="schedule_tutoring"
+                                    entityType="student"
+                                    entityId={params.id}
+                                    entityName={studentName}
+                                    size="sm"
+                                    variant="secondary"
+                                />
+                                <ActionButton
+                                    type="parent_outreach"
+                                    entityType="student"
+                                    entityId={params.id}
+                                    entityName={studentName}
+                                    size="sm"
+                                    variant="secondary"
+                                />
+                            </div>
+                        )}
                     </BentoCard>
                 </div>
 

@@ -14,6 +14,13 @@ export interface District {
     totalTeachers: number;
 }
 
+export interface SchoolGoals {
+    reading: { current: number; target: number };
+    math: { current: number; target: number };
+    attendance: { current: number; target: number };
+    tutoringEngagement: { current: number; target: number };
+}
+
 export interface School {
     id: string;
     districtId: string;
@@ -25,6 +32,7 @@ export interface School {
     performance: number;
     attendance: number;
     status: 'good' | 'warning' | 'alert';
+    goals?: SchoolGoals;
 }
 
 export interface Teacher {
@@ -52,6 +60,8 @@ export interface Student {
     subjects: string[];
     badges: string[];
     status: 'excelling' | 'on-track' | 'at-risk';
+    riskScore?: number; // 0-100, higher = more at risk
+    riskFactors?: string[];
 }
 
 export interface Insight {
@@ -100,6 +110,12 @@ const mockSchools: Record<string, School> = {
         performance: 92,
         attendance: 94,
         status: 'good',
+        goals: {
+            reading: { current: 88, target: 90 },
+            math: { current: 85, target: 88 },
+            attendance: { current: 94, target: 95 },
+            tutoringEngagement: { current: 78, target: 85 },
+        },
     },
     's2': {
         id: 's2',
@@ -112,6 +128,12 @@ const mockSchools: Record<string, School> = {
         performance: 78,
         attendance: 88,
         status: 'alert',
+        goals: {
+            reading: { current: 72, target: 85 },
+            math: { current: 68, target: 80 },
+            attendance: { current: 88, target: 95 },
+            tutoringEngagement: { current: 45, target: 75 },
+        },
     },
     's3': {
         id: 's3',
@@ -260,6 +282,8 @@ const mockStudents: Record<string, Student> = {
         subjects: ['Algebra II', 'English', 'Biology', 'History', 'Art'],
         badges: [],
         status: 'at-risk',
+        riskScore: 72,
+        riskFactors: ['GPA below 2.5', 'Math performance declining', '2 late assignments this week'],
     },
     'st3': {
         id: 'st3',
@@ -282,6 +306,8 @@ const mockStudents: Record<string, Student> = {
         subjects: ['Algebra I', 'English', 'Earth Science', 'History', 'PE'],
         badges: [],
         status: 'at-risk',
+        riskScore: 85,
+        riskFactors: ['GPA below 2.0', '5 absences this month', 'Failing Math', 'Parent contact overdue'],
     },
     'st5': {
         id: 'st5',

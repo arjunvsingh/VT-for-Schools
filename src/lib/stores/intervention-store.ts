@@ -10,7 +10,9 @@ export type InterventionType =
     | 'send_email'
     | 'approve_budget'
     | 'flag_for_review'
-    | 'assign_mentor';
+    | 'assign_mentor'
+    | 'schedule_tutoring'
+    | 'parent_outreach';
 
 export type InterventionStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -66,6 +68,16 @@ export const interventionLabels: Record<InterventionType, { label: string; icon:
         label: 'Assign Mentor',
         icon: '👥',
         description: 'Pair with a mentor teacher',
+    },
+    schedule_tutoring: {
+        label: 'Schedule Tutoring',
+        icon: '📚',
+        description: 'Set up tutoring sessions for the student',
+    },
+    parent_outreach: {
+        label: 'Contact Parent',
+        icon: '📞',
+        description: 'Initiate parent/guardian communication',
     },
 };
 

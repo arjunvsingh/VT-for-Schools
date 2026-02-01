@@ -3,8 +3,9 @@
 import { PageTransition } from '@/components/layout/PageTransition';
 import DistrictMap from '@/components/district/DistrictMap';
 import { BentoCard } from '@/components/ui/BentoCard';
+import { ActionButton } from '@/components/ui/ActionButton';
 import { BackLink } from '@/components/navigation';
-import { TrendingUp, AlertTriangle, Users } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useDataStore } from '@/lib/stores';
 
@@ -95,20 +96,29 @@ export default function DistrictPage({ params }: { params: { id: string } }) {
 
                     <BentoCard
                         title="Quick Actions"
-                        icon={<Users className="text-blue-400" />}
-                        className="h-[140px]"
+                        icon={<Zap className="text-acid-lime" />}
+                        className="h-[160px]"
                         glow
                     >
-                        <div className="grid grid-cols-2 gap-2 mt-auto h-full content-end">
-                            <button className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 hover:text-acid-lime rounded-lg text-xs transition-all border border-white/5">
-                                Report
-                            </button>
-                            <button className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 hover:text-acid-lime rounded-lg text-xs transition-all border border-white/5">
-                                Email
-                            </button>
-                            <button className="col-span-2 flex items-center justify-center p-2 bg-acid-lime/10 hover:bg-acid-lime/20 text-acid-lime border border-acid-lime/20 rounded-lg text-xs transition-all">
-                                Schedule Review
-                            </button>
+                        <div className="flex flex-col gap-2 mt-auto">
+                            <ActionButton
+                                type="schedule_meeting"
+                                entityType="district"
+                                entityId={params.id}
+                                entityName={districtName}
+                                variant="secondary"
+                                size="sm"
+                                className="w-full justify-center"
+                            />
+                            <ActionButton
+                                type="send_email"
+                                entityType="district"
+                                entityId={params.id}
+                                entityName={districtName}
+                                variant="secondary"
+                                size="sm"
+                                className="w-full justify-center"
+                            />
                         </div>
                     </BentoCard>
                 </div>

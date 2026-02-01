@@ -174,7 +174,7 @@ export function CompareDrawer() {
                         {/* Footer */}
                         <div className="p-4 border-t border-white/10 text-center">
                             <p className="text-xs text-off-white/40">
-                                Add up to 3 items to compare by clicking "Compare" on any card
+                                Add up to 3 items to compare by clicking &quot;Compare&quot; on any card
                             </p>
                         </div>
                     </motion.div>

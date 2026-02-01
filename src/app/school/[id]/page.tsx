@@ -5,6 +5,7 @@ import { BentoCard } from '@/components/ui/BentoCard';
 import { ActionButton } from '@/components/ui/ActionButton';
 import PerformanceHeatmap from '@/components/school/PerformanceHeatmap';
 import ProjectionGraph from '@/components/school/ProjectionGraph';
+import { GoalsDashboard } from '@/components/school/GoalsDashboard';
 import { BackLink } from '@/components/navigation';
 import { Users, Zap, BookOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -43,6 +44,11 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     </div>
                 </div>
             </header>
+
+            {/* Goals Dashboard */}
+            {school?.goals && (
+                <GoalsDashboard goals={school.goals} />
+            )}
 
             {/* Top Insights & Actions */}
             <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
