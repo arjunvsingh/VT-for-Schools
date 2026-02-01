@@ -41,6 +41,8 @@ export default function CaliforniaCubes({
 }: CubesProps) {
     // Tooltip state
     const [tooltip, setTooltip] = React.useState<{ x: number; y: number; content: string } | null>(null);
+    // Track currently highlighted cube
+    const highlightedCubeRef = useRef<HTMLElement | null>(null);
 
     const sceneRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
@@ -124,18 +126,47 @@ export default function CaliforniaCubes({
                 userActiveRef.current = false;
             }, 3000);
 
-            // Tooltip logic
+            // Highlight logic - find and highlight the cube under cursor
             if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
-                if (CALIFORNIA_GRID[row] && CALIFORNIA_GRID[row][col] === 1) {
+                const isValidCube = CALIFORNIA_GRID[row] && CALIFORNIA_GRID[row][col] === 1;
+
+                if (isValidCube) {
+                    // Find the cube element
+                    const cubeElement = sceneRef.current.querySelector(
+                        `.cube[data-row="${row}"][data-col="${col}"]`
+                    ) as HTMLElement | null;
+
+                    // Only update if it's a different cube
+                    if (cubeElement && cubeElement !== highlightedCubeRef.current) {
+                        // Remove highlight from previous cube
+                        if (highlightedCubeRef.current) {
+                            highlightedCubeRef.current.classList.remove('cube--highlighted');
+                        }
+                        // Add highlight to new cube
+                        cubeElement.classList.add('cube--highlighted');
+                        highlightedCubeRef.current = cubeElement;
+                    }
+
+                    // Tooltip
                     setTooltip({
                         x: e.clientX,
                         y: e.clientY,
                         content: `District ${row * gridCols + col} • ${(row * col) % 20 + 5} Schools`
                     });
                 } else {
+                    // Not on a valid cube - remove highlight
+                    if (highlightedCubeRef.current) {
+                        highlightedCubeRef.current.classList.remove('cube--highlighted');
+                        highlightedCubeRef.current = null;
+                    }
                     setTooltip(null);
                 }
             } else {
+                // Out of grid bounds - remove highlight
+                if (highlightedCubeRef.current) {
+                    highlightedCubeRef.current.classList.remove('cube--highlighted');
+                    highlightedCubeRef.current = null;
+                }
                 setTooltip(null);
             }
         },
@@ -157,6 +188,11 @@ export default function CaliforniaCubes({
     const onLeave = useCallback(() => {
         resetAll();
         setTooltip(null);
+        // Clear highlight when leaving the grid
+        if (highlightedCubeRef.current) {
+            highlightedCubeRef.current.classList.remove('cube--highlighted');
+            highlightedCubeRef.current = null;
+        }
     }, [resetAll, setTooltip]);
 
     const onClick = useCallback(

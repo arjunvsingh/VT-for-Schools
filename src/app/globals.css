@@ -293,3 +293,25 @@ html.lenis body {
 .default-animation .cube-face--front {
   transform: rotateY(-90deg) translateX(50%) rotateY(90deg);
 }
+
+/* Cube Highlight Effect */
+.cube {
+  transition: filter 0.2s ease-out;
+}
+
+.cube .cube-face {
+  transition: background 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.cube.cube--highlighted .cube-face {
+  background: rgba(212, 242, 104, 0.15) !important;
+  border-color: rgba(212, 242, 104, 0.8) !important;
+  box-shadow:
+    inset 0 0 15px rgba(212, 242, 104, 0.2),
+    0 0 20px rgba(212, 242, 104, 0.3);
+}
+
+.cube.cube--highlighted {
+  filter: drop-shadow(0 0 12px rgba(212, 242, 104, 0.5));
+  z-index: 10;
+}

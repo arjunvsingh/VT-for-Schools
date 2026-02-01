@@ -2,33 +2,42 @@
 
 import CaliforniaCubes from '@/components/visuals/CaliforniaCubes';
 import { BentoCard } from '@/components/ui/BentoCard';
-import { EarlyWarningRadar } from '@/components/ui/EarlyWarningRadar';
+import { SystemHealthMonitor } from '@/components/ui/SystemHealthMonitor';
 import { ActivityFeed } from '@/components/ui/ActivityFeed';
-import { TrendingUp, Users, GraduationCap, Radar } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useDataStore } from '@/lib/stores';
 import { useMemo } from 'react';
 
 export default function Home() {
-  // Get all students with risk scores for the Early Warning Radar
-  const students = useDataStore((state) => state.students);
+  // Get data for System Health Monitor
   const schools = useDataStore((state) => state.schools);
+  const teachers = useDataStore((state) => state.teachers);
 
-  // Transform students for the radar
-  const earlyWarningStudents = useMemo(() => {
-    return Object.values(students)
-      .filter((s) => s.riskScore && s.riskScore > 30)
-      .map((s) => ({
-        id: s.id,
-        name: s.name,
-        initials: s.initials,
-        schoolId: s.schoolId,
-        schoolName: schools[s.schoolId]?.name || 'Unknown School',
-        riskScore: s.riskScore || 0,
-        riskFactors: s.riskFactors || [],
-        grade: s.grade,
-      }));
-  }, [students, schools]);
+  // Transform data for the health monitor
+  const { healthSchools, healthTeachers } = useMemo(() => {
+    // Transform Schools
+    const s = Object.values(schools).map(school => ({
+      id: school.id,
+      name: school.name,
+      status: school.status as 'good' | 'warning' | 'alert',
+      principal: school.principal,
+      performance: school.performance,
+      issue: school.status === 'alert' ? 'Critical Performance' : school.status === 'warning' ? 'Below Average' : undefined
+    }));
+
+    // Transform Teachers
+    const t = Object.values(teachers).map(teacher => ({
+      id: teacher.id,
+      name: teacher.name,
+      schoolName: schools[teacher.schoolId]?.name || 'Unknown',
+      status: teacher.status as 'active' | 'flagged' | 'inactive',
+      rating: teacher.rating,
+      issue: teacher.status === 'flagged' ? 'Performance Review Req.' : undefined
+    }));
+
+    return { healthSchools: s, healthTeachers: t };
+  }, [schools, teachers]);
 
   return (
     <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start overflow-hidden">
@@ -76,103 +85,23 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Early Warning Radar Card */}
+        {/* Critical Focus Card (Replaced Radar) */}
         <BentoCard
-          title="Early Warning Radar"
-          description="Students requiring attention"
-          icon={<Radar className="text-red-400" />}
+          title="Critical Focus"
+          description="High priority alerts"
+          icon={<AlertTriangle className="text-red-400" />}
           className="min-h-[320px]"
           glow
         >
-          <div className="flex-1 flex items-center justify-center pt-4 pb-8">
-            <EarlyWarningRadar
-              students={earlyWarningStudents}
-              maxStudents={15}
-              className="max-w-[280px]"
+          <div className="flex-1 pt-4 h-full overflow-hidden">
+            <SystemHealthMonitor
+              schools={healthSchools}
+              teachers={healthTeachers}
             />
           </div>
         </BentoCard>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
 
-          {/* District Health */}
-          <BentoCard
-            title="District Health"
-            colSpan={2}
-            description="Performance across 24 zones."
-            icon={<TrendingUp className="text-acid-lime" />}
-            className="h-[160px]"
-            glow
-          >
-            <div className="flex-1 w-full h-full bg-gradient-to-br from-acid-lime/10 to-transparent rounded-xl flex items-end p-4">
-              <div className="flex items-end gap-1 w-full h-1/2">
-                {[40, 60, 45, 80, 70, 90, 85, 60, 75, 50, 65, 80].map((h, i) => (
-                  <div key={i} style={{ height: `${h}%` }} className="flex-1 bg-acid-lime/40 rounded-t-sm hover:bg-acid-lime transition-colors duration-300" />
-                ))}
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Enrollment */}
-          <BentoCard
-            title="Enrollment"
-            description="+2.4% YoY"
-            icon={<Users className="text-blue-400" />}
-            className="h-[120px]"
-            glow
-          >
-            <div className="mt-auto flex items-baseline gap-2">
-              <span className="text-3xl font-serif text-blue-400">4.2M</span>
-              <span className="text-xs text-blue-400/60">Active Students</span>
-            </div>
-          </BentoCard>
-
-          {/* Teacher Retention */}
-          <BentoCard
-            title="Teacher Retention"
-            colSpan={1}
-            description="Avg. Tenure"
-            icon={<GraduationCap className="text-cyan-400" />}
-            className="h-[120px]"
-            glow
-          >
-            <div className="flex flex-col h-full mt-2 justify-between">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">8.2y</span>
-                <span className="text-xs text-off-white/40">Avg</span>
-              </div>
-              <div className="flex justify-between text-[10px] text-off-white/60 w-full">
-                <span>Metro 7.1y</span>
-                <span>Rural 8.8y</span>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Budget Utilization */}
-          <BentoCard
-            title="Budget Utilization"
-            colSpan={2}
-            description="FY 2026"
-            className="h-[100px]"
-            glow
-          >
-            <div className="h-full w-full flex flex-col justify-end gap-2 pb-1">
-              <div className="flex justify-between text-xs">
-                <span>Allocated</span>
-                <span className="font-mono">72%</span>
-              </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden w-full">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: '72%' }}
-                  transition={{ duration: 1.5, delay: 0.5 }}
-                  className="h-full bg-off-white"
-                />
-              </div>
-            </div>
-          </BentoCard>
-        </div>
 
         {/* Activity Feed */}
         <BentoCard
