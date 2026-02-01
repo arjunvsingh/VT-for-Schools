@@ -2,6 +2,7 @@
 
 import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
+import { ActionButton } from '@/components/ui/ActionButton';
 import PerformanceHeatmap from '@/components/school/PerformanceHeatmap';
 import ProjectionGraph from '@/components/school/ProjectionGraph';
 import { BackLink } from '@/components/navigation';
@@ -57,9 +58,14 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                                 <span className="text-sm font-bold text-red-200">Math Dept Underperformance</span>
                                 <span className="text-xs text-red-200/60">3 teachers flagged for support intervention req.</span>
                             </div>
-                            <Link href="/teacher/t1" className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400 transition-colors">
-                                Request Bridge
-                            </Link>
+                            <ActionButton
+                                type="request_bridge"
+                                entityType="teacher"
+                                entityId="t2"
+                                entityName="John Doe (Math Dept)"
+                                variant="secondary"
+                                size="sm"
+                            />
                         </div>
 
                         <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between">
@@ -67,9 +73,14 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                                 <span className="text-sm font-bold text-cyan-200">Science Fair Approaching</span>
                                 <span className="text-xs text-cyan-200/60">Budget approval pending for 12 kits.</span>
                             </div>
-                            <button className="px-3 py-1 bg-cyan-500 text-white text-xs rounded hover:bg-cyan-400 transition-colors">
-                                Approve
-                            </button>
+                            <ActionButton
+                                type="approve_budget"
+                                entityType="school"
+                                entityId={params.id}
+                                entityName={`${schoolName} Science Fair`}
+                                variant="secondary"
+                                size="sm"
+                            />
                         </div>
                     </div>
                 </BentoCard>

@@ -4,6 +4,11 @@ import "./globals.css";
 import { TopBar } from "@/components/layout/TopBar";
 import { NoiseOverlay } from "@/components/layout/NoiseOverlay";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { ToastProvider } from "@/components/ui/Toast";
+import { CommandBar } from "@/components/ui/CommandBar";
+import { TimeSlider } from "@/components/ui/TimeSlider";
+import { CompareDrawer, CompareIndicator } from "@/components/ui/CompareDrawer";
+import { NotesPanel } from "@/components/ui/NotesPanel";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -35,8 +40,15 @@ export default function RootLayout({
           <NoiseOverlay />
           <TopBar />
           {children}
+          <ToastProvider />
+          <CommandBar />
+          <TimeSlider />
+          <CompareDrawer />
+          <CompareIndicator />
+          <NotesPanel />
         </SmoothScroll>
       </body>
     </html>
   );
 }
+

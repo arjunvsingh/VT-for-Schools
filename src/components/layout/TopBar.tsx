@@ -25,8 +25,8 @@ export function TopBar() {
                             case 'Dashboard': return '/';
                             case 'Districts': return '/district/1';
                             case 'Schools': return '/school/s1';
-                            case 'Teachers': return '/teacher/t1';
-                            case 'Students': return '/student/st1';
+                            case 'Teachers': return '/teachers';
+                            case 'Students': return '/students';
                             default: return '/';
                         }
                     };
