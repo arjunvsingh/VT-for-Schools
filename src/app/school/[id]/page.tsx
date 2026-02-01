@@ -59,35 +59,78 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     glow
                 >
                     <div className="flex flex-col gap-4 mt-2">
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center justify-between">
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-red-200">Math Dept Underperformance</span>
-                                <span className="text-xs text-red-200/60">3 teachers flagged for support intervention req.</span>
+                        {/* Dynamic insights based on goals */}
+                        {school?.goals && school.goals.math.current < school.goals.math.target && (
+                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-red-200">Math Proficiency Below Target</span>
+                                    <span className="text-xs text-red-200/60">
+                                        Currently at {school.goals.math.current}% (target: {school.goals.math.target}%).
+                                        {school.goals.math.target - school.goals.math.current > 10
+                                            ? ' Urgent intervention recommended.'
+                                            : ' Additional tutoring may help.'}
+                                    </span>
+                                </div>
+                                <ActionButton
+                                    type="schedule_tutoring"
+                                    entityType="school"
+                                    entityId={params.id}
+                                    entityName={`${schoolName} Math Program`}
+                                    variant="secondary"
+                                    size="sm"
+                                />
                             </div>
-                            <ActionButton
-                                type="request_bridge"
-                                entityType="teacher"
-                                entityId="t2"
-                                entityName="John Doe (Math Dept)"
-                                variant="secondary"
-                                size="sm"
-                            />
-                        </div>
+                        )}
 
-                        <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between">
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-cyan-200">Science Fair Approaching</span>
-                                <span className="text-xs text-cyan-200/60">Budget approval pending for 12 kits.</span>
+                        {school?.goals && school.goals.attendance.current < school.goals.attendance.target && (
+                            <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-orange-200">Attendance Tracking Behind</span>
+                                    <span className="text-xs text-orange-200/60">
+                                        {school.goals.attendance.current}% attendance vs {school.goals.attendance.target}% goal.
+                                        Review chronic absentees.
+                                    </span>
+                                </div>
+                                <ActionButton
+                                    type="parent_outreach"
+                                    entityType="school"
+                                    entityId={params.id}
+                                    entityName={`${schoolName} Attendance`}
+                                    variant="secondary"
+                                    size="sm"
+                                />
                             </div>
-                            <ActionButton
-                                type="approve_budget"
-                                entityType="school"
-                                entityId={params.id}
-                                entityName={`${schoolName} Science Fair`}
-                                variant="secondary"
-                                size="sm"
-                            />
-                        </div>
+                        )}
+
+                        {school?.goals && school.goals.reading.current >= school.goals.reading.target && (
+                            <div className="p-3 bg-acid-lime/10 border border-acid-lime/20 rounded-lg flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-acid-lime">🎉 Reading Goal Achieved!</span>
+                                    <span className="text-xs text-acid-lime/60">
+                                        {school.goals.reading.current}% proficiency exceeds {school.goals.reading.target}% target.
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {school?.goals && school.goals.tutoringEngagement.current < school.goals.tutoringEngagement.target && (
+                            <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-cyan-200">Tutoring Engagement Low</span>
+                                    <span className="text-xs text-cyan-200/60">
+                                        Only {school.goals.tutoringEngagement.current}% of at-risk students enrolled (target: {school.goals.tutoringEngagement.target}%).
+                                    </span>
+                                </div>
+                                <ActionButton
+                                    type="send_email"
+                                    entityType="school"
+                                    entityId={params.id}
+                                    entityName={`${schoolName} Tutoring Team`}
+                                    variant="secondary"
+                                    size="sm"
+                                />
+                            </div>
+                        )}
                     </div>
                 </BentoCard>
 

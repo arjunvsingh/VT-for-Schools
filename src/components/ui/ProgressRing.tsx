@@ -13,6 +13,7 @@ interface ProgressRingProps {
     showPercentage?: boolean;
     animate?: boolean;
     colorThresholds?: { good: number; warning: number }; // percentages
+    displayValue?: number; // Optional: show this value in center instead of calculated percentage
 }
 
 export function ProgressRing({
@@ -24,6 +25,7 @@ export function ProgressRing({
     showPercentage = true,
     animate = true,
     colorThresholds = { good: 80, warning: 60 },
+    displayValue,
 }: ProgressRingProps) {
     const [mounted, setMounted] = useState(false);
 
@@ -91,7 +93,7 @@ export function ProgressRing({
                             isComplete && "text-acid-lime"
                         )}
                     >
-                        {Math.round(percentage)}%
+                        {displayValue !== undefined ? displayValue : Math.round(percentage)}%
                     </motion.span>
 
                     {isComplete && (

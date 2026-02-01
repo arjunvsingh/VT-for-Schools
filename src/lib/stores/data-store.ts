@@ -111,10 +111,10 @@ const mockSchools: Record<string, School> = {
         attendance: 94,
         status: 'good',
         goals: {
-            reading: { current: 88, target: 90 },
-            math: { current: 85, target: 88 },
-            attendance: { current: 94, target: 95 },
-            tutoringEngagement: { current: 78, target: 85 },
+            reading: { current: 91, target: 90 },  // EXCEEDED
+            math: { current: 86, target: 88 },     // Close but not met
+            attendance: { current: 94, target: 95 },// Close but not met  
+            tutoringEngagement: { current: 88, target: 85 }, // EXCEEDED
         },
     },
     's2': {
@@ -125,14 +125,14 @@ const mockSchools: Record<string, School> = {
         principal: 'Ms. J. Williams',
         students: 850,
         teachers: 38,
-        performance: 78,
-        attendance: 88,
+        performance: 72,
+        attendance: 85,
         status: 'alert',
         goals: {
-            reading: { current: 72, target: 85 },
-            math: { current: 68, target: 80 },
-            attendance: { current: 88, target: 95 },
-            tutoringEngagement: { current: 45, target: 75 },
+            reading: { current: 68, target: 82 },  // Needs work
+            math: { current: 62, target: 78 },     // Struggling
+            attendance: { current: 85, target: 92 },// Behind
+            tutoringEngagement: { current: 48, target: 70 }, // Needs significant improvement
         },
     },
     's3': {
@@ -330,6 +330,72 @@ const mockStudents: Record<string, Student> = {
         subjects: ['Calculus', 'Physics', 'English', 'Economics', 'Gym'],
         badges: [],
         status: 'on-track',
+    },
+    // Additional at-risk students for better radar visualization
+    'st7': {
+        id: 'st7',
+        schoolId: 's2',
+        name: 'Jayden Thompson',
+        initials: 'JT',
+        grade: 8,
+        gpa: 1.7,
+        subjects: ['Pre-Algebra', 'English', 'Science', 'History', 'PE'],
+        badges: [],
+        status: 'at-risk',
+        riskScore: 91,
+        riskFactors: ['GPA below 2.0', '8 absences this month', 'Failing 3 classes', 'Behavior incidents'],
+    },
+    'st8': {
+        id: 'st8',
+        schoolId: 's2',
+        name: 'Aisha Patel',
+        initials: 'AP',
+        grade: 7,
+        gpa: 2.3,
+        subjects: ['Math 7', 'English', 'Science', 'Social Studies', 'Art'],
+        badges: [],
+        status: 'at-risk',
+        riskScore: 58,
+        riskFactors: ['GPA trending down', '2 absences this week'],
+    },
+    'st9': {
+        id: 'st9',
+        schoolId: 's1',
+        name: 'Tyler Brooks',
+        initials: 'TB',
+        grade: 10,
+        gpa: 2.4,
+        subjects: ['Geometry', 'English', 'Chemistry', 'History', 'Spanish'],
+        badges: [],
+        status: 'at-risk',
+        riskScore: 45,
+        riskFactors: ['Math performance declining', 'Assignment completion dropping'],
+    },
+    'st10': {
+        id: 'st10',
+        schoolId: 's2',
+        name: 'Maya Green',
+        initials: 'MG',
+        grade: 9,
+        gpa: 2.0,
+        subjects: ['Algebra I', 'English', 'Biology', 'Geography', 'PE'],
+        badges: [],
+        status: 'at-risk',
+        riskScore: 67,
+        riskFactors: ['GPA at 2.0', 'Chronic lateness', 'Missing homework'],
+    },
+    'st11': {
+        id: 'st11',
+        schoolId: 's3',
+        name: 'Chris Martinez',
+        initials: 'CM',
+        grade: 11,
+        gpa: 2.2,
+        subjects: ['Algebra II', 'English', 'Physics', 'History', 'Art'],
+        badges: [],
+        status: 'at-risk',
+        riskScore: 52,
+        riskFactors: ['Science performance struggling', 'Missed parent conference'],
     },
 };
 

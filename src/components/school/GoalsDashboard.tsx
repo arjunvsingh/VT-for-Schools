@@ -82,6 +82,7 @@ export function GoalsDashboard({ goals, className }: GoalsDashboardProps) {
                                 strokeWidth={6}
                                 showPercentage={true}
                                 animate={true}
+                                displayValue={value.current}
                             />
 
                             {/* Label */}
