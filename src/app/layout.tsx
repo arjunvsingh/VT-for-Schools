@@ -6,7 +6,6 @@ import { NoiseOverlay } from "@/components/layout/NoiseOverlay";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { ToastProvider } from "@/components/ui/Toast";
 import { CommandBar } from "@/components/ui/CommandBar";
-import { TimeSlider } from "@/components/ui/TimeSlider";
 import { CompareDrawer, CompareIndicator } from "@/components/ui/CompareDrawer";
 import { NotesPanel } from "@/components/ui/NotesPanel";
 
@@ -42,7 +41,6 @@ export default function RootLayout({
           {children}
           <ToastProvider />
           <CommandBar />
-          <TimeSlider />
           <CompareDrawer />
           <CompareIndicator />
           <NotesPanel />
@@ -51,4 +49,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
