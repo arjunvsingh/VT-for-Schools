@@ -180,8 +180,11 @@ export default function CaliforniaCubes({
 
             if (!isValidCube) return;
 
-            // Calculate district ID from grid position
-            const districtId = rowHit * gridCols + colHit + 1;
+            // Map grid position to a valid district ID (we have 2 demo districts)
+            // Use a simple hash to distribute cubes across available districts
+            const cubeIndex = rowHit * gridCols + colHit;
+            const numDistricts = 2; // Number of districts in mock data
+            const districtId = (cubeIndex % numDistricts) + 1;
 
             const baseRingDelay = 0.15;
             const baseAnimDur = 0.3;

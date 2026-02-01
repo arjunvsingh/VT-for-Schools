@@ -3,26 +3,38 @@
 import { PageTransition } from '@/components/layout/PageTransition';
 import DistrictMap from '@/components/district/DistrictMap';
 import { BentoCard } from '@/components/ui/BentoCard';
-import { ArrowLeft, TrendingUp, AlertTriangle, Users } from 'lucide-react';
+import { BackLink } from '@/components/navigation';
+import { TrendingUp, AlertTriangle, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useDataStore } from '@/lib/stores';
 
 export default function DistrictPage({ params }: { params: { id: string } }) {
+    const district = useDataStore((state) => state.getDistrict(params.id));
+    const schools = useDataStore((state) => state.getSchoolsForDistrict(params.id));
+
+    // Fallback for invalid district ID
+    const districtName = district?.name ?? `District ${params.id}`;
+    const performance = district?.performance ?? 0;
+    const totalStudents = district?.totalStudents ?? 0;
+    const status = district?.status ?? 'good';
+
+    // Get schools with alerts
+    const alertSchools = schools.filter(s => s.status === 'alert' || s.status === 'warning');
+
     return (
         <PageTransition className="p-4 md:p-8 pt-24 min-h-screen flex flex-col gap-6">
 
             {/* Header */}
             <header className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
-                    <Link href="/" className="flex items-center gap-2 text-sm text-off-white/60 hover:text-acid-lime transition-colors w-fit">
-                        <ArrowLeft className="w-4 h-4" /> Back to State
-                    </Link>
-                    <h1 className="font-serif text-4xl italic">District {params.id}</h1>
+                    <BackLink href="/" label="Back to State" />
+                    <h1 className="font-serif text-4xl italic">{districtName}</h1>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div className="px-4 py-2 bg-white/5 rounded-full border border-white/10 text-sm font-mono flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        Status: Operational
+                        <div className={`w-2 h-2 rounded-full ${status === 'good' ? 'bg-green-500' : status === 'warning' ? 'bg-orange-500' : 'bg-red-500'} animate-pulse`} />
+                        Status: {status === 'good' ? 'Operational' : status === 'warning' ? 'Needs Attention' : 'Critical'}
                     </div>
                 </div>
             </header>
@@ -48,11 +60,11 @@ export default function DistrictPage({ params }: { params: { id: string } }) {
                     >
                         <div className="flex-1 w-full h-full bg-gradient-to-br from-acid-lime/5 to-transparent rounded-xl flex flex-col justify-end p-2 gap-2">
                             <div className="flex justify-between items-end">
-                                <span className="text-4xl font-serif text-acid-lime">88%</span>
+                                <span className="text-4xl font-serif text-acid-lime">{performance}%</span>
                                 <span className="text-xs text-off-white/60 mb-1">Avg. Performance</span>
                             </div>
                             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-acid-lime w-[88%] shadow-[0_0_10px_rgba(212,242,104,0.5)]" />
+                                <div className="h-full bg-acid-lime shadow-[0_0_10px_rgba(212,242,104,0.5)]" style={{ width: `${performance}%` }} />
                             </div>
                         </div>
                     </BentoCard>
