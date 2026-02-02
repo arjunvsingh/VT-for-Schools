@@ -1,17 +1,12 @@
-'use client';
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
+import { TimelineEvent } from '@/lib/stores/data-store';
 
-const EVENTS = [
-    { year: '2025-10', title: 'Performance Review', text: 'Exceeded district benchmarks in STEM integration.' },
-    { year: '2025-08', title: 'Curriculum Update', text: 'Lead the revision of grade 10 physics syllabus.' },
-    { year: '2025-05', title: 'Student Feedback', text: 'Received 98% positive rating in annual student survey.' },
-    { year: '2025-01', title: 'Workshop Conducted', text: 'Hosted district-wide seminar on visual learning.' },
-    { year: '2024-11', title: 'Grant Awarded', text: 'Secured $5k grant for lab equipment.' },
-    { year: '2024-09', title: 'Joined District', text: 'Started tenure at Lincoln High School.' },
-];
+interface TeacherTimelineProps {
+    timeline?: TimelineEvent[];
+}
 
-export default function TeacherTimeline() {
+export default function TeacherTimeline({ timeline = [] }: TeacherTimelineProps) {
     const containerRef = useRef(null);
 
     return (
@@ -25,7 +20,7 @@ export default function TeacherTimeline() {
                 <div className="absolute left-6 top-0 bottom-0 w-px bg-white/10" />
 
                 <div className="flex flex-col gap-8 pb-20">
-                    {EVENTS.map((event, i) => (
+                    {timeline.length > 0 ? timeline.map((event, i) => (
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -42,7 +37,11 @@ export default function TeacherTimeline() {
                                 <p className="text-sm text-off-white/60 max-w-sm">{event.text}</p>
                             </div>
                         </motion.div>
-                    ))}
+                    )) : (
+                        <div className="pl-12 text-sm text-off-white/40 italic">
+                            No timeline events recorded.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

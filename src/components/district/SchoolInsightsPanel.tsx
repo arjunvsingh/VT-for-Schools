@@ -24,6 +24,7 @@ interface SchoolInsightsPanelProps {
 export function SchoolInsightsPanel({ schoolId, onClose }: SchoolInsightsPanelProps) {
     const school = useDataStore((state) => state.getSchool(schoolId));
     const teachers = useDataStore((state) => state.getTeachersForSchool(schoolId));
+    const insights = useDataStore((state) => state.getInsightsForEntity('school', schoolId));
 
     if (!school) return null;
 
@@ -59,42 +60,85 @@ export function SchoolInsightsPanel({ schoolId, onClose }: SchoolInsightsPanelPr
                     </button>
                 </div>
 
-                {/* AI Summary Card */}
-                <BentoCard
-                    title="AI Insights"
-                    icon={<Sparkles className={cn(
-                        "w-4 h-4",
-                        isAlert ? "text-red-400" : isWarning ? "text-orange-400" : "text-acid-lime"
-                    )} />}
-                    className="min-h-[160px]"
-                    glow
-                >
-                    <div className="flex flex-col gap-3 mt-2">
-                        {school.aiSummary ? (
-                            <>
-                                <p className={cn(
-                                    "text-sm font-medium",
-                                    isAlert ? "text-red-300" : isWarning ? "text-orange-300" : "text-acid-lime"
-                                )}>
-                                    {school.aiSummary.headline}
-                                </p>
-                                <ul className="space-y-1.5">
-                                    {school.aiSummary.details.map((detail, idx) => (
-                                        <li key={idx} className="flex items-start gap-2 text-xs text-off-white/70">
-                                            <span className={cn(
-                                                "w-1 h-1 rounded-full mt-1.5 shrink-0",
-                                                isAlert ? "bg-red-400" : isWarning ? "bg-orange-400" : "bg-acid-lime"
-                                            )} />
-                                            {detail}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </>
-                        ) : (
-                            <p className="text-xs text-off-white/50">No AI insights available</p>
-                        )}
-                    </div>
-                </BentoCard>
+                {/* Priority Insights - Dynamic */}
+                {insights.length > 0 && (
+                    <BentoCard
+                        title="Priority Insights"
+                        icon={<Sparkles className="w-4 h-4 text-acid-lime" />}
+                        className="min-h-[160px]"
+                        glow
+                    >
+                        <div className="flex flex-col gap-3 mt-2">
+                            {insights.map(insight => (
+                                <div key={insight.id} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <h4 className="font-bold text-sm text-off-white">{insight.title}</h4>
+                                        {insight.priority && (
+                                            <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${insight.priority === 'high' ? 'bg-red-500/20 text-red-300' : 'bg-acid-lime/10 text-acid-lime'}`}>
+                                                {insight.priority}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-off-white/80 mb-2">{insight.description}</p>
+
+                                    {insight.impactMetric && (
+                                        <div className="mb-2 pl-2 border-l-2 border-acid-lime/30">
+                                            <p className="text-[10px] text-off-white/50 uppercase">Impact</p>
+                                            <p className="text-xs text-off-white/90">{insight.impactMetric}</p>
+                                        </div>
+                                    )}
+
+                                    {insight.actionLabel && (
+                                        <div className="mt-2">
+                                            <Link href={insight.actionPath || '#'} className="text-xs font-bold text-acid-lime flex items-center gap-1 hover:underline">
+                                                {insight.actionLabel} <ArrowRight className="w-3 h-3" />
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </BentoCard>
+                )}
+
+                {/* AI Summary Card (Legacy/Fallback) */}
+                {!insights.length && (
+                    <BentoCard
+                        title="AI Insights"
+                        icon={<Sparkles className={cn(
+                            "w-4 h-4",
+                            isAlert ? "text-red-400" : isWarning ? "text-orange-400" : "text-acid-lime"
+                        )} />}
+                        className="min-h-[160px]"
+                        glow
+                    >
+                        <div className="flex flex-col gap-3 mt-2">
+                            {school.aiSummary ? (
+                                <>
+                                    <p className={cn(
+                                        "text-sm font-medium",
+                                        isAlert ? "text-red-300" : isWarning ? "text-orange-300" : "text-acid-lime"
+                                    )}>
+                                        {school.aiSummary.headline}
+                                    </p>
+                                    <ul className="space-y-1.5">
+                                        {school.aiSummary.details.map((detail, idx) => (
+                                            <li key={idx} className="flex items-start gap-2 text-xs text-off-white/70">
+                                                <span className={cn(
+                                                    "w-1 h-1 rounded-full mt-1.5 shrink-0",
+                                                    isAlert ? "bg-red-400" : isWarning ? "bg-orange-400" : "bg-acid-lime"
+                                                )} />
+                                                {detail}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            ) : (
+                                <p className="text-xs text-off-white/50">No AI insights available</p>
+                            )}
+                        </div>
+                    </BentoCard>
+                )}
 
                 {/* Flagged Teachers */}
                 {flaggedTeachers.length > 0 && (

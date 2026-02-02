@@ -20,6 +20,10 @@ export default function StudentPage({ params }: { params: { id: string } }) {
     const schoolId = student?.schoolId ?? 's1';
     const status = student?.status ?? 'on-track';
 
+    // New enriched data
+    const riskFactors = student?.riskFactors ?? [];
+    const areasOfFocus = student?.areasOfFocus ?? [];
+
     return (
         <PageTransition className="p-4 md:p-8 pt-24 min-h-screen max-w-5xl mx-auto flex flex-col gap-6">
 
@@ -78,31 +82,85 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                         </div>
                     </BentoCard>
 
-                    <BentoCard title="Areas of Focus" icon={<AlertCircle className="text-orange-400" />}>
-                        <div className="mt-2 text-sm text-orange-200/80 p-3 bg-orange-400/5 rounded border border-orange-400/10">
-                            <p>• English Lit essays submitted late (2 occurrences).</p>
-                        </div>
-                        {status === 'at-risk' && (
-                            <div className="mt-3 flex gap-2">
-                                <ActionButton
-                                    type="schedule_tutoring"
-                                    entityType="student"
-                                    entityId={params.id}
-                                    entityName={studentName}
-                                    size="sm"
-                                    variant="secondary"
-                                />
-                                <ActionButton
-                                    type="parent_outreach"
-                                    entityType="student"
-                                    entityId={params.id}
-                                    entityName={studentName}
-                                    size="sm"
-                                    variant="secondary"
-                                />
+                    {/* Risk Analysis - New Card */}
+                    {riskFactors.length > 0 && (
+                        <BentoCard title="Risk Analysis" icon={<AlertCircle className="text-red-400" />} className="bg-red-500/5">
+                            <div className="flex flex-col gap-3 mt-2">
+                                {riskFactors.map(rf => (
+                                    <div key={rf.id} className="p-3 rounded-lg bg-red-400/5 border border-red-400/10">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <h4 className="font-bold text-red-300 text-sm">{rf.type}</h4>
+                                            <span className="text-[10px] uppercase tracking-wider text-red-200/50 bg-red-400/10 px-1.5 py-0.5 rounded">{rf.trend}</span>
+                                        </div>
+                                        <p className="text-xs text-off-white/80 mb-2">{rf.detail}</p>
+
+                                        {/* Metric if available */}
+                                        {rf.metric && (
+                                            <div className="flex items-center gap-2 mb-2 text-[10px] text-off-white/50 bg-black/20 p-1.5 rounded">
+                                                <span>Current: <span className="text-off-white font-mono">{rf.metric.current}</span></span>
+                                                <span>•</span>
+                                                <span>Target: <span className="text-off-white font-mono">{rf.metric.threshold}</span></span>
+                                            </div>
+                                        )}
+
+                                        <ActionButton
+                                            type={rf.actionType}
+                                            entityType="student"
+                                            entityId={params.id}
+                                            entityName={studentName}
+                                            size="sm"
+                                            variant="secondary"
+                                            customLabel={rf.suggestedAction}
+                                            className="w-full justify-center text-xs h-8"
+                                        />
+                                    </div>
+                                ))}
                             </div>
-                        )}
-                    </BentoCard>
+                        </BentoCard>
+                    )}
+
+                    {/* Areas of Focus - Enriched */}
+                    {areasOfFocus.length > 0 ? (
+                        <BentoCard title="Areas of Focus" icon={<AlertCircle className="text-orange-400" />}>
+                            <div className="flex flex-col gap-3 mt-2">
+                                {areasOfFocus.map(area => (
+                                    <div key={area.id} className="p-3 rounded-lg bg-orange-400/5 border border-orange-400/10">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-xs font-bold text-orange-300 bg-orange-400/10 px-1.5 py-0.5 rounded">{area.subject}</span>
+                                            <span className="text-xs text-orange-200/60">• {area.occurrences} occurrences</span>
+                                        </div>
+                                        <p className="text-sm font-medium text-orange-100 mb-1">{area.issue}</p>
+
+                                        <div className="mt-2 pl-2 border-l-2 border-orange-400/20">
+                                            <p className="text-[10px] text-off-white/40 uppercase tracking-wider mb-0.5">Root Cause</p>
+                                            <p className="text-xs text-off-white/70 italic">{area.rootCause}</p>
+                                        </div>
+
+                                        <div className="mt-3 flex items-center justify-between gap-2">
+                                            <span className="text-[10px] text-off-white/40">Teacher: {area.teacherName}</span>
+                                            <ActionButton
+                                                type={area.actionType}
+                                                entityType="student"
+                                                entityId={params.id}
+                                                entityName={studentName}
+                                                size="sm"
+                                                variant="secondary"
+                                                customLabel="Take Action"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </BentoCard>
+                    ) : (
+                        // Fallback empty state or original hardcoded value if no enriched data (shouldn't happen with updated store)
+                        <BentoCard title="Areas of Focus" icon={<AlertCircle className="text-green-400" />}>
+                            <div className="p-4 text-center text-off-white/40 text-sm">
+                                <CheckCircle className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                                <p>No immediate concerns identified.</p>
+                            </div>
+                        </BentoCard>
+                    )}
                 </div>
 
             </div>

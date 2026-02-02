@@ -13,31 +13,43 @@ export default function Home() {
   // Get data for System Health Monitor
   const schools = useDataStore((state) => state.schools);
   const teachers = useDataStore((state) => state.teachers);
+  const insights = useDataStore((state) => state.insights);
 
   // Transform data for the health monitor
   const { healthSchools, healthTeachers } = useMemo(() => {
     // Transform Schools
-    const s = Object.values(schools).map(school => ({
-      id: school.id,
-      name: school.name,
-      status: school.status as 'good' | 'warning' | 'alert',
-      principal: school.principal,
-      performance: school.performance,
-      issue: school.status === 'alert' ? 'Critical Performance' : school.status === 'warning' ? 'Below Average' : undefined
-    }));
+    const s = Object.values(schools).map(school => {
+      // Find top priority insight for this school to use as the issue
+      const schoolInsights = insights.filter(i => i.entityId === school.id && (i.severity === 'critical' || i.severity === 'warning'));
+      const topInsight = schoolInsights.length > 0 ? schoolInsights[0].title : undefined;
+
+      return {
+        id: school.id,
+        name: school.name,
+        status: school.status as 'good' | 'warning' | 'alert',
+        principal: school.principal,
+        performance: school.performance,
+        issue: topInsight || (school.status === 'alert' ? 'Critical Performance' : school.status === 'warning' ? 'Below Average' : undefined)
+      };
+    });
 
     // Transform Teachers
-    const t = Object.values(teachers).map(teacher => ({
-      id: teacher.id,
-      name: teacher.name,
-      schoolName: schools[teacher.schoolId]?.name || 'Unknown',
-      status: teacher.status as 'active' | 'flagged' | 'inactive',
-      rating: teacher.rating,
-      issue: teacher.status === 'flagged' ? 'Performance Review Req.' : undefined
-    }));
+    const t = Object.values(teachers).map(teacher => {
+      const teacherInsights = insights.filter(i => i.entityId === teacher.id && (i.severity === 'critical' || i.severity === 'warning'));
+      const topInsight = teacherInsights.length > 0 ? teacherInsights[0].title : undefined;
+
+      return {
+        id: teacher.id,
+        name: teacher.name,
+        schoolName: schools[teacher.schoolId]?.name || 'Unknown',
+        status: teacher.status as 'active' | 'flagged' | 'inactive',
+        rating: teacher.rating,
+        issue: topInsight || (teacher.status === 'flagged' ? 'Performance Review Req.' : undefined)
+      };
+    });
 
     return { healthSchools: s, healthTeachers: t };
-  }, [schools, teachers]);
+  }, [schools, teachers, insights]);
 
   return (
     <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start overflow-hidden">

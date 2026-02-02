@@ -5,7 +5,7 @@ import TeacherTimeline from '@/components/teacher/TeacherTimeline';
 import { BackLink } from '@/components/navigation';
 import { NotesButton } from '@/components/ui/NotesPanel';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { Mail, Phone, Award, Star } from 'lucide-react';
+import { Mail, Phone, Award, Star, AlertCircle } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
 
 export default function TeacherPage({ params }: { params: { id: string } }) {
@@ -115,9 +115,30 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                     </div>
                 </div>
 
+                {/* Performance Issues - Only if any exist */}
+                {teacher?.performanceIssues && teacher.performanceIssues.length > 0 && (
+                    <BentoCard title="Performance Log" icon={<AlertCircle className="text-red-400" />} className="bg-red-500/5">
+                        <div className="flex flex-col gap-3 mt-2">
+                            {teacher.performanceIssues.map(issue => (
+                                <div key={issue.id} className="p-3 rounded-lg bg-red-400/5 border border-red-400/10">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <h4 className="font-bold text-red-300 text-sm">{issue.type}</h4>
+                                        <div className="flex gap-2">
+                                            <span className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${issue.severity === 'high' ? 'bg-red-500 text-white' : 'bg-orange-500/20 text-orange-300'}`}>{issue.severity}</span>
+                                            <span className="text-[10px] uppercase tracking-wider text-off-white/50 bg-white/5 px-1.5 py-0.5 rounded">{issue.status}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-off-white/80 mb-2">{issue.description}</p>
+                                    <p className="text-[10px] text-off-white/40 font-mono text-right">{issue.date}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </BentoCard>
+                )}
+
                 {/* Timeline Bento */}
                 <BentoCard className="flex-1" glow>
-                    <TeacherTimeline />
+                    <TeacherTimeline timeline={teacher?.timeline} />
                 </BentoCard>
             </div>
 
