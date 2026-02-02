@@ -130,7 +130,7 @@ const mockSchools: Record<string, School> = {
                 'Math dept needs 2% improvement to meet goal',
                 '1 teacher flagged for support (John Doe - Math)',
             ],
-            suggestedActions: ['Schedule math dept review', 'Request tutoring bridge for flagged teacher'],
+            suggestedActions: ['Schedule math dept review', 'Enroll struggling students in HDT program'],
         },
     },
     's2': {
@@ -158,7 +158,7 @@ const mockSchools: Record<string, School> = {
                 'Math scores 16% below district average',
                 '22% tutoring engagement gap detected',
             ],
-            suggestedActions: ['Request bridge for Michael Brown', 'Contact principal immediately', 'Deploy attendance intervention'],
+            suggestedActions: ['Enroll Michael Brown\'s students in HDT', 'Contact principal immediately', 'Deploy HDT attendance cohort'],
         },
     },
     's3': {
@@ -239,7 +239,7 @@ const mockSchools: Record<string, School> = {
                 'Substitute coverage at 40% this month',
                 'Student-teacher ratio above recommended',
             ],
-            suggestedActions: ['Prioritize hiring', 'Request substitute support', 'Contact HR'],
+            suggestedActions: ['Prioritize hiring', 'Request substitute support', 'Expand HDT sessions for coverage'],
         },
     },
 };
@@ -477,8 +477,8 @@ const mockInsights: Insight[] = [
         entityId: 's1',
         severity: 'critical',
         title: 'Math Dept Underperformance',
-        description: '3 teachers flagged for support intervention req.',
-        actionLabel: 'Request Bridge',
+        description: '3 teachers flagged for support - HDT recommended.',
+        actionLabel: 'Enroll in HDT',
         actionPath: '/teacher/t2',
     },
     {

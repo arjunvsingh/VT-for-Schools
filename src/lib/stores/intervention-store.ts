@@ -12,6 +12,7 @@ export type InterventionType =
     | 'flag_for_review'
     | 'assign_mentor'
     | 'schedule_tutoring'
+    | 'enroll_hdt'
     | 'parent_outreach'
     | 'send_accolades';
 
@@ -74,6 +75,11 @@ export const interventionLabels: Record<InterventionType, { label: string; icon:
         label: 'Schedule Tutoring',
         icon: '📚',
         description: 'Set up tutoring sessions for the student',
+    },
+    enroll_hdt: {
+        label: 'Enroll in HDT',
+        icon: '🎯',
+        description: 'Enroll in High Dosage Tutoring (3-4x weekly, small group)',
     },
     parent_outreach: {
         label: 'Contact Parent',

@@ -83,15 +83,15 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                                         <span className="text-sm text-red-200/60">
                                             Currently at {school.goals.math.current}% (target: {school.goals.math.target}%).
                                             {school.goals.math.target - school.goals.math.current > 10
-                                                ? ' Urgent intervention recommended.'
-                                                : ' Additional tutoring may help.'}
+                                                ? ' High Dosage Tutoring recommended for rapid improvement.'
+                                                : ' Consider HDT enrollment for at-risk students.'}
                                         </span>
                                     </div>
                                     <ActionButton
-                                        type="schedule_tutoring"
+                                        type="enroll_hdt"
                                         entityType="school"
                                         entityId={params.id}
-                                        entityName={`${schoolName} Math Program`}
+                                        entityName={`${schoolName} Math HDT Program`}
                                         variant="secondary"
                                         size="sm"
                                         onComplete={() => dismissInsight('math')}
@@ -155,16 +155,16 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                                     className="p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between"
                                 >
                                     <div className="flex flex-col">
-                                        <span className="text-base font-bold text-cyan-200">Tutoring Engagement Low</span>
+                                        <span className="text-base font-bold text-cyan-200">HDT Enrollment Below Target</span>
                                         <span className="text-sm text-cyan-200/60">
-                                            Only {school.goals.tutoringEngagement.current}% of at-risk students enrolled (target: {school.goals.tutoringEngagement.target}%).
+                                            Only {school.goals.tutoringEngagement.current}% of at-risk students in High Dosage Tutoring (target: {school.goals.tutoringEngagement.target}%).
                                         </span>
                                     </div>
                                     <ActionButton
-                                        type="send_email"
+                                        type="enroll_hdt"
                                         entityType="school"
                                         entityId={params.id}
-                                        entityName={`${schoolName} Tutoring Team`}
+                                        entityName={`${schoolName} HDT Program`}
                                         variant="secondary"
                                         size="sm"
                                         onComplete={() => dismissInsight('tutoring')}

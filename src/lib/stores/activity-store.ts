@@ -54,8 +54,8 @@ const generateMockActivities = (): ActivityItem[] => {
         {
             id: 'a3',
             type: 'insight',
-            title: 'Tutoring Engagement Rising',
-            description: 'Lincoln High tutoring participation up 10% this month',
+            title: 'HDT Engagement Rising',
+            description: 'Lincoln High HDT participation up 10% this month',
             timestamp: new Date(now.getTime() - 60 * 60 * 1000), // 1 hour ago
             entityType: 'school',
             entityId: 's1',
@@ -65,8 +65,8 @@ const generateMockActivities = (): ActivityItem[] => {
         {
             id: 'a4',
             type: 'action',
-            title: 'Tutoring Scheduled',
-            description: 'Alex Kim matched with tutor for Algebra II support',
+            title: 'HDT Enrollment Complete',
+            description: 'Alex Kim enrolled in HDT program for Algebra II support',
             timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
             entityType: 'student',
             entityId: 'st2',
@@ -83,7 +83,7 @@ const generateMockActivities = (): ActivityItem[] => {
             entityId: 't6',
             entityName: 'Michael Brown',
             isRead: false,
-            interventionType: 'request_bridge',
+            interventionType: 'enroll_hdt',
         },
         {
             id: 'a6',

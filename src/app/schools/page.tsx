@@ -7,11 +7,11 @@ import { useDataStore } from '@/lib/stores/data-store';
 import { SchoolGrid } from '@/components/school/SchoolGrid';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useTransitionNavigate } from '@/components/layout/TransitionOverlay';
 
 export default function SchoolsPage() {
     const schools = useDataStore((state) => state.schools);
-    const router = useRouter();
+    const navigate = useTransitionNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'good' | 'warning' | 'alert'>('all');
 
@@ -127,7 +127,7 @@ export default function SchoolsPage() {
                                     </p>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => router.push(`/school/${alertSchools[0]?.id}`)}
+                                            onClick={() => navigate(`/school/${alertSchools[0]?.id}`)}
                                             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/20 text-red-200 text-xs font-bold hover:bg-red-500/30 transition-colors"
                                         >
                                             <TrendingDown className="w-3 h-3" />
@@ -156,7 +156,7 @@ export default function SchoolsPage() {
                                     </p>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => router.push(`/school/${warningSchools[0]?.id}`)}
+                                            onClick={() => navigate(`/school/${warningSchools[0]?.id}`)}
                                             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-orange-500/20 text-orange-200 text-xs font-bold hover:bg-orange-500/30 transition-colors"
                                         >
                                             <ArrowRight className="w-3 h-3" />
