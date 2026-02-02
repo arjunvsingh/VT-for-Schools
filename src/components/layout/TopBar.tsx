@@ -19,10 +19,11 @@ export function TopBar() {
             </div>
 
             <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-off-white/5 p-1 backdrop-blur-md">
-                {['Dashboard', 'Districts', 'Schools', 'Teachers', 'Students'].map((item) => {
+                {['Dashboard', 'Analytics', 'Districts', 'Schools', 'Teachers', 'Students'].map((item) => {
                     const getLink = (name: string) => {
                         switch (name) {
                             case 'Dashboard': return '/';
+                            case 'Analytics': return '/analytics';
                             case 'Districts': return '/district/1';
                             case 'Schools': return '/schools';
                             case 'Teachers': return '/teachers';

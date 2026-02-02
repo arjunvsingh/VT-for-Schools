@@ -13,6 +13,7 @@ import { BackLink } from '@/components/navigation';
 import { Users, Zap, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useDataStore } from '@/lib/stores';
+import { cn } from '@/lib/utils';
 
 export default function SchoolPage({ params }: { params: { id: string } }) {
     const school = useDataStore((state) => state.getSchool(params.id));
@@ -251,33 +252,30 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     glow
                 >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 h-full overflow-y-auto no-scrollbar">
-                        <Link href="/teacher/t1" className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-200 font-serif italic border border-cyan-500/30">SC</div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">Sarah Carter</span>
-                                    <span className="text-[10px] text-off-white/60">Physics Head</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-acid-lime font-mono">4.9</span>
-                                <span className="text-[10px] text-off-white/40">Rating</span>
-                            </div>
-                        </Link>
-
-                        <div className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg opacity-50 cursor-not-allowed">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-200 font-serif italic border border-blue-500/30">JD</div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-sm">John Doe</span>
-                                    <span className="text-[10px] text-off-white/60">Math Dept</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-yellow-400 font-mono">3.2</span>
-                                <span className="text-[10px] text-off-white/40">Rating</span>
-                            </div>
-                        </div>
+                        {teachers.slice(0, 4).map((teacher) => {
+                            const ratingColor = teacher.rating >= 4.0 ? 'text-acid-lime' : teacher.rating >= 3.0 ? 'text-yellow-400' : 'text-red-400';
+                            const avatarColor = teacher.status === 'flagged'
+                                ? 'bg-orange-500/20 border-orange-500/30 text-orange-200'
+                                : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-200';
+                            return (
+                                <Link key={teacher.id} href={`/teacher/${teacher.id}`} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center font-serif italic border", avatarColor)}>{teacher.initials}</div>
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">{teacher.name}</span>
+                                            <span className="text-[10px] text-off-white/60">{teacher.department}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className={cn("font-mono", ratingColor)}>{teacher.rating.toFixed(1)}</span>
+                                        <span className="text-[10px] text-off-white/40">Rating</span>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                        {teachers.length === 0 && (
+                            <p className="text-off-white/30 text-sm col-span-2 text-center py-4">No teachers assigned</p>
+                        )}
                     </div>
                 </BentoCard>
 
@@ -289,30 +287,38 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     glow
                 >
                     <div className="flex flex-col gap-3 mt-2 h-full overflow-y-auto no-scrollbar">
-                        <Link href="/student/st1" className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-200 font-mono text-xs border border-cyan-500/30">JS</div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">John Smith</span>
-                                    <span className="text-[10px] text-off-white/60">Grade 11</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-acid-lime font-mono text-xs">3.8 GPA</span>
-                            </div>
-                        </Link>
-                        <div className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg opacity-50">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-200 font-mono text-xs border border-orange-500/30">AK</div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-sm">Alex Kim</span>
-                                    <span className="text-[10px] text-off-white/60">Grade 10</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-orange-400 font-mono text-xs">2.1 GPA</span>
-                            </div>
-                        </div>
+                        {students
+                            .sort((a, b) => {
+                                if (a.status === 'at-risk' && b.status !== 'at-risk') return -1;
+                                if (b.status === 'at-risk' && a.status !== 'at-risk') return 1;
+                                return b.gpa - a.gpa;
+                            })
+                            .slice(0, 4)
+                            .map((student) => {
+                                const gpaColor = student.gpa >= 3.5 ? 'text-acid-lime' : student.gpa >= 2.5 ? 'text-cyan-400' : 'text-red-400';
+                                const avatarColor = student.status === 'at-risk'
+                                    ? 'bg-red-500/20 border-red-500/30 text-red-200'
+                                    : student.status === 'excelling'
+                                        ? 'bg-acid-lime/20 border-acid-lime/30 text-acid-lime'
+                                        : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-200';
+                                return (
+                                    <Link key={student.id} href={`/student/${student.id}`} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-acid-lime/50 transition-all group">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs border", avatarColor)}>{student.initials}</div>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm group-hover:text-acid-lime transition-colors">{student.name}</span>
+                                                <span className="text-[10px] text-off-white/60">Grade {student.grade}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className={cn("font-mono text-xs", gpaColor)}>{student.gpa.toFixed(1)} GPA</span>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        {students.length === 0 && (
+                            <p className="text-off-white/30 text-sm text-center py-4">No students enrolled</p>
+                        )}
                     </div>
                 </BentoCard>
             </section>

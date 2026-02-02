@@ -4,16 +4,20 @@ import CaliforniaCubes from '@/components/visuals/CaliforniaCubes';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { SystemHealthMonitor } from '@/components/ui/SystemHealthMonitor';
 import { ActivityFeed } from '@/components/ui/ActivityFeed';
-import { AlertTriangle } from 'lucide-react';
+import { KPIStrip } from '@/components/ui/KPIStrip';
+import { AlertTriangle, Users, School, TrendingUp, Calendar, GraduationCap, ShieldAlert } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useDataStore } from '@/lib/stores';
 import { useMemo } from 'react';
 
 export default function Home() {
-  // Get data for System Health Monitor
+  // Get data for System Health Monitor and KPIs
   const schools = useDataStore((state) => state.schools);
   const teachers = useDataStore((state) => state.teachers);
   const insights = useDataStore((state) => state.insights);
+  const getDistrictMetrics = useDataStore((state) => state.getDistrictMetrics);
+
+  const metrics = getDistrictMetrics();
 
   // Transform data for the health monitor
   const { healthSchools, healthTeachers } = useMemo(() => {
@@ -51,11 +55,64 @@ export default function Home() {
     return { healthSchools: s, healthTeachers: t };
   }, [schools, teachers, insights]);
 
+  const kpiMetrics = useMemo(() => [
+    {
+      label: 'Total Students',
+      value: metrics.totalStudents.toLocaleString(),
+      subtitle: `${metrics.excellingCount} excelling`,
+      color: 'white' as const,
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      label: 'At-Risk Students',
+      value: metrics.atRiskCount,
+      subtitle: 'Require intervention',
+      trend: -2.4,
+      color: 'red' as const,
+      icon: <ShieldAlert className="w-4 h-4" />,
+    },
+    {
+      label: 'Avg Performance',
+      value: `${metrics.avgPerformance}%`,
+      subtitle: 'District-wide',
+      trend: metrics.performanceTrend,
+      color: 'lime' as const,
+      icon: <TrendingUp className="w-4 h-4" />,
+    },
+    {
+      label: 'Attendance Rate',
+      value: `${metrics.avgAttendance}%`,
+      subtitle: 'This semester',
+      trend: metrics.attendanceTrend,
+      color: 'cyan' as const,
+      icon: <Calendar className="w-4 h-4" />,
+    },
+    {
+      label: 'Schools Monitored',
+      value: metrics.totalSchools,
+      subtitle: `${Object.values(schools).filter(s => s.status === 'alert').length} need attention`,
+      color: 'orange' as const,
+      icon: <School className="w-4 h-4" />,
+    },
+    {
+      label: 'Avg GPA',
+      value: metrics.avgGPA.toFixed(1),
+      subtitle: `${metrics.onTrackCount} on track`,
+      color: 'lime' as const,
+      icon: <GraduationCap className="w-4 h-4" />,
+    },
+  ], [metrics, schools]);
+
   return (
-    <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start overflow-hidden">
+    <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col gap-6 overflow-hidden">
+
+      {/* KPI Strip - Full Width */}
+      <KPIStrip metrics={kpiMetrics} compact />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
 
       {/* Left Column: Header + Map */}
-      <section className="lg:col-span-7 flex flex-col h-[calc(100vh-8rem)] relative">
+      <section className="lg:col-span-7 flex flex-col h-[calc(100vh-14rem)] relative">
         <div className="flex flex-col gap-4 mb-8 z-10 pointer-events-none">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-tight">
             State of <br />
@@ -86,7 +143,7 @@ export default function Home() {
       </section>
 
       {/* Right Column: Bento Stack with Early Warning + Activity Feed */}
-      <section className="lg:col-span-5 flex flex-col gap-6 h-[calc(100vh-8rem)]">
+      <section className="lg:col-span-5 flex flex-col gap-6 h-[calc(100vh-14rem)]">
 
         {/* System Overview Header */}
         <div className="flex items-center justify-between">
@@ -124,6 +181,7 @@ export default function Home() {
 
       </section>
 
+      </div>
     </main>
   );
 }

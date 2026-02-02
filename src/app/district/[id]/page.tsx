@@ -1,24 +1,80 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import DistrictMap from '@/components/district/DistrictMap';
 import { SchoolInsightsPanel } from '@/components/district/SchoolInsightsPanel';
 import { BentoCard } from '@/components/ui/BentoCard';
-import { ActionButton } from '@/components/ui/ActionButton';
+import { KPIStrip } from '@/components/ui/KPIStrip';
 import { BackLink } from '@/components/navigation';
-import { TrendingUp, AlertTriangle, Zap, ArrowRight, FileText, Radio as Broadcast, Users } from 'lucide-react';
+import { AlertTriangle, Zap, ArrowRight, FileText, Radio as Broadcast, Users, School, GraduationCap, TrendingUp, Calendar } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function DistrictPage({ params }: { params: { id: string } }) {
     const district = useDataStore((state) => state.getDistrict(params.id));
+    const districtSchools = useDataStore((state) => state.getSchoolsForDistrict(params.id));
+    const allStudents = useDataStore((state) => state.students);
     const [selectedSchoolId, setSelectedSchoolId] = useState<string | null>(null);
 
     // Fallback for invalid district ID
     const districtName = district?.name ?? `District ${params.id}`;
-    const performance = district?.performance ?? 0;
-    const status = district?.status ?? 'good';
+
+    // Compute district-level KPIs
+    const kpiMetrics = useMemo(() => {
+        if (districtSchools.length === 0) return [];
+
+        const totalStudents = districtSchools.reduce((sum, s) => sum + s.students, 0);
+        const totalTeachers = districtSchools.reduce((sum, s) => sum + s.teachers, 0);
+        const avgPerf = Math.round(districtSchools.reduce((sum, s) => sum + s.performance, 0) / districtSchools.length);
+        const avgAtt = Math.round(districtSchools.reduce((sum, s) => sum + s.attendance, 0) / districtSchools.length);
+        const alertCount = districtSchools.filter(s => s.status === 'alert').length;
+
+        // Count at-risk students in this district's schools
+        const schoolIds = new Set(districtSchools.map(s => s.id));
+        const districtStudents = Object.values(allStudents).filter(s => schoolIds.has(s.schoolId));
+        const atRiskCount = districtStudents.filter(s => s.status === 'at-risk').length;
+
+        return [
+            {
+                label: 'Schools',
+                value: districtSchools.length,
+                subtitle: `${alertCount} need attention`,
+                color: 'white' as const,
+                icon: <School className="w-4 h-4" />,
+            },
+            {
+                label: 'Total Students',
+                value: totalStudents.toLocaleString(),
+                subtitle: `${atRiskCount} at-risk`,
+                color: atRiskCount > 0 ? 'red' as const : 'lime' as const,
+                icon: <GraduationCap className="w-4 h-4" />,
+            },
+            {
+                label: 'Avg Performance',
+                value: `${avgPerf}%`,
+                subtitle: 'District-wide',
+                trend: 2.1,
+                color: 'lime' as const,
+                icon: <TrendingUp className="w-4 h-4" />,
+            },
+            {
+                label: 'Attendance',
+                value: `${avgAtt}%`,
+                subtitle: 'This semester',
+                trend: -0.5,
+                color: 'cyan' as const,
+                icon: <Calendar className="w-4 h-4" />,
+            },
+            {
+                label: 'Teachers',
+                value: totalTeachers,
+                subtitle: `${Math.round(totalStudents / totalTeachers)}:1 ratio`,
+                color: 'white' as const,
+                icon: <Users className="w-4 h-4" />,
+            },
+        ];
+    }, [districtSchools, allStudents]);
 
     return (
         <PageTransition className="p-4 md:p-8 pt-20 md:pt-24 min-h-screen flex flex-col gap-6">
@@ -34,6 +90,11 @@ export default function DistrictPage({ params }: { params: { id: string } }) {
                     {/* Status pill removed as requested */}
                 </div>
             </header>
+
+            {/* District KPIs */}
+            {kpiMetrics.length > 0 && (
+                <KPIStrip metrics={kpiMetrics} compact />
+            )}
 
             {/* Canvas & Sidebar Layout */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[500px] lg:h-[calc(100vh-12rem)]">

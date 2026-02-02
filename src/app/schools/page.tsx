@@ -2,18 +2,22 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ArrowLeft, Sparkles, AlertTriangle, ArrowRight, MessageSquare, UserCheck, TrendingDown, Zap } from 'lucide-react';
-import { useDataStore } from '@/lib/stores/data-store';
+import { Search, ArrowLeft, Sparkles, AlertTriangle, ArrowRight, MessageSquare, UserCheck, TrendingDown, Zap, LayoutGrid, TableProperties } from 'lucide-react';
+import { useDataStore, School } from '@/lib/stores/data-store';
 import { SchoolGrid } from '@/components/school/SchoolGrid';
+import { DataTable, Column } from '@/components/ui/DataTable';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTransitionNavigate } from '@/components/layout/TransitionOverlay';
 
 export default function SchoolsPage() {
     const schools = useDataStore((state) => state.schools);
     const navigate = useTransitionNavigate();
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'good' | 'warning' | 'alert'>('all');
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
     // Filter logic
     const filteredSchools = useMemo(() => {
@@ -37,6 +41,87 @@ export default function SchoolsPage() {
     // Get schools that need attention for AI insights
     const alertSchools = useMemo(() => Object.values(schools).filter(s => s.status === 'alert'), [schools]);
     const warningSchools = useMemo(() => Object.values(schools).filter(s => s.status === 'warning'), [schools]);
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'alert': return 'text-red-400 bg-red-400/10 border-red-400/20';
+            case 'warning': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
+            case 'good': return 'text-acid-lime bg-acid-lime/10 border-acid-lime/20';
+            default: return 'text-off-white/60 bg-white/5 border-white/10';
+        }
+    };
+
+    const tableColumns: Column<School>[] = useMemo(() => [
+        {
+            key: 'name',
+            header: 'School',
+            render: (row) => (
+                <div>
+                    <span className="font-medium text-off-white">{row.name}</span>
+                    <p className="text-[10px] text-off-white/40">Principal: {row.principal}</p>
+                </div>
+            ),
+            getValue: (row) => row.name,
+        },
+        {
+            key: 'students',
+            header: 'Students',
+            width: '100px',
+            align: 'center',
+            render: (row) => <span className="font-mono text-off-white/80">{row.students.toLocaleString()}</span>,
+            getValue: (row) => row.students,
+        },
+        {
+            key: 'teachers',
+            header: 'Teachers',
+            width: '90px',
+            align: 'center',
+            render: (row) => <span className="font-mono text-off-white/80">{row.teachers}</span>,
+            getValue: (row) => row.teachers,
+        },
+        {
+            key: 'performance',
+            header: 'Performance',
+            width: '120px',
+            align: 'center',
+            render: (row) => (
+                <div className="flex items-center gap-2 justify-center">
+                    <div className="w-16 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                        <div
+                            className={cn("h-full rounded-full", row.performance >= 80 ? "bg-acid-lime" : row.performance >= 60 ? "bg-cyan-400" : "bg-red-400")}
+                            style={{ width: `${row.performance}%` }}
+                        />
+                    </div>
+                    <span className="text-xs font-mono text-off-white/70">{row.performance}%</span>
+                </div>
+            ),
+            getValue: (row) => row.performance,
+        },
+        {
+            key: 'attendance',
+            header: 'Attendance',
+            width: '110px',
+            align: 'center',
+            render: (row) => (
+                <span className={cn("font-mono text-xs", row.attendance >= 90 ? "text-acid-lime" : row.attendance >= 80 ? "text-cyan-400" : "text-orange-400")}>
+                    {row.attendance}%
+                </span>
+            ),
+            getValue: (row) => row.attendance,
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            width: '100px',
+            align: 'center',
+            render: (row) => (
+                <span className={cn("px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wide", getStatusBadge(row.status))}>
+                    {row.status}
+                </span>
+            ),
+            getValue: (row) => row.status,
+        },
+    ], []);
 
     return (
         <main className="min-h-screen w-full bg-stone-black text-off-white flex flex-col pt-24 pb-8 px-4 md:px-8 overflow-x-hidden">
@@ -234,12 +319,47 @@ export default function SchoolsPage() {
                             color="green"
                         />
                     </div>
+
+                    {/* View Toggle */}
+                    <div className="flex rounded-lg border border-white/10 overflow-hidden">
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={cn(
+                                "p-2 transition-colors",
+                                viewMode === 'grid' ? "bg-acid-lime/20 text-acid-lime" : "text-off-white/40 hover:bg-white/5"
+                            )}
+                            aria-label="Grid view"
+                        >
+                            <LayoutGrid className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('table')}
+                            className={cn(
+                                "p-2 transition-colors",
+                                viewMode === 'table' ? "bg-acid-lime/20 text-acid-lime" : "text-off-white/40 hover:bg-white/5"
+                            )}
+                            aria-label="Table view"
+                        >
+                            <TableProperties className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Grid */}
+            {/* Schools View */}
             <div className="max-w-7xl mx-auto w-full flex-1 min-h-0">
-                <SchoolGrid schools={filteredSchools} />
+                {viewMode === 'table' ? (
+                    <DataTable<School>
+                        data={filteredSchools}
+                        columns={tableColumns}
+                        keyExtractor={(row) => row.id}
+                        onRowClick={(row) => router.push(`/school/${row.id}`)}
+                        pageSize={12}
+                        emptyMessage="No schools match your filters"
+                    />
+                ) : (
+                    <SchoolGrid schools={filteredSchools} />
+                )}
             </div>
 
             {/* Background Decoration */}

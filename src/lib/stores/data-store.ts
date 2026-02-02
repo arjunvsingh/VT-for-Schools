@@ -960,6 +960,60 @@ const mockInsights: Insight[] = [
     }
 ];
 
+// ============== Analytics Mock Data ==============
+
+export interface TrendDataPoint {
+    month: string;
+    performance: number;
+    attendance: number;
+    enrollment: number;
+}
+
+export interface SubjectMastery {
+    subject: string;
+    mastery: number;
+    trend: number; // % change
+    studentCount: number;
+    category: string;
+}
+
+export interface DistrictMetrics {
+    totalStudents: number;
+    totalTeachers: number;
+    totalSchools: number;
+    atRiskCount: number;
+    onTrackCount: number;
+    excellingCount: number;
+    avgPerformance: number;
+    avgAttendance: number;
+    activeInterventions: number;
+    avgGPA: number;
+    performanceTrend: number;
+    attendanceTrend: number;
+}
+
+const mockTrendData: TrendDataPoint[] = [
+    { month: 'Aug', performance: 78, attendance: 92, enrollment: 820 },
+    { month: 'Sep', performance: 80, attendance: 91, enrollment: 845 },
+    { month: 'Oct', performance: 82, attendance: 90, enrollment: 850 },
+    { month: 'Nov', performance: 81, attendance: 88, enrollment: 855 },
+    { month: 'Dec', performance: 84, attendance: 89, enrollment: 858 },
+    { month: 'Jan', performance: 85, attendance: 91, enrollment: 865 },
+];
+
+const mockSubjectMastery: SubjectMastery[] = [
+    { subject: 'Reading Comprehension', mastery: 88, trend: 3.2, studentCount: 680, category: 'Literacy' },
+    { subject: 'Linear Equations', mastery: 72, trend: -2.1, studentCount: 540, category: 'Algebra' },
+    { subject: 'Scientific Method', mastery: 81, trend: 1.5, studentCount: 420, category: 'Science' },
+    { subject: 'Essay Writing', mastery: 85, trend: 4.0, studentCount: 610, category: 'Literacy' },
+    { subject: 'Geometry Proofs', mastery: 64, trend: -5.3, studentCount: 320, category: 'Math' },
+    { subject: 'US History', mastery: 79, trend: 0.8, studentCount: 480, category: 'Social Studies' },
+    { subject: 'Photosynthesis', mastery: 76, trend: 2.3, studentCount: 380, category: 'Biology' },
+    { subject: 'Quadratic Equations', mastery: 58, trend: -4.7, studentCount: 290, category: 'Algebra' },
+    { subject: 'Spanish Vocab', mastery: 91, trend: 1.1, studentCount: 260, category: 'Language' },
+    { subject: 'Data Analysis', mastery: 70, trend: -1.8, studentCount: 350, category: 'Math' },
+];
+
 // ============== Store ==============
 
 interface DataState {
@@ -968,6 +1022,8 @@ interface DataState {
     teachers: Record<string, Teacher>;
     students: Record<string, Student>;
     insights: Insight[];
+    trendData: TrendDataPoint[];
+    subjectMastery: SubjectMastery[];
 
     // Selectors
     getDistrict: (id: string) => District | undefined;
@@ -978,6 +1034,10 @@ interface DataState {
     getTeachersForSchool: (schoolId: string) => Teacher[];
     getStudentsForSchool: (schoolId: string) => Student[];
     getInsightsForEntity: (entityType: string, entityId: string) => Insight[];
+    getDistrictMetrics: () => DistrictMetrics;
+    getAtRiskStudents: () => Student[];
+    getTopSkills: (limit?: number) => SubjectMastery[];
+    getWeakestSkills: (limit?: number) => SubjectMastery[];
 }
 
 export const useDataStore = create<DataState>((set, get) => ({
@@ -986,6 +1046,8 @@ export const useDataStore = create<DataState>((set, get) => ({
     teachers: mockTeachers,
     students: mockStudents,
     insights: mockInsights,
+    trendData: mockTrendData,
+    subjectMastery: mockSubjectMastery,
 
     getDistrict: (id: string) => get().districts[id],
 
@@ -1015,5 +1077,52 @@ export const useDataStore = create<DataState>((set, get) => ({
         return get().insights.filter(
             i => i.entityType === entityType && i.entityId === entityId
         );
+    },
+
+    getDistrictMetrics: () => {
+        const students = Object.values(get().students);
+        const schools = Object.values(get().schools);
+        const teachers = Object.values(get().teachers);
+
+        const atRisk = students.filter(s => s.status === 'at-risk');
+        const onTrack = students.filter(s => s.status === 'on-track');
+        const excelling = students.filter(s => s.status === 'excelling');
+        const avgPerf = schools.reduce((sum, s) => sum + s.performance, 0) / schools.length;
+        const avgAtt = schools.reduce((sum, s) => sum + s.attendance, 0) / schools.length;
+        const avgGPA = students.reduce((sum, s) => sum + s.gpa, 0) / students.length;
+        const activeInterventions = students.reduce((sum, s) => sum + (s.riskFactors?.length || 0), 0);
+
+        return {
+            totalStudents: students.length,
+            totalTeachers: teachers.length,
+            totalSchools: schools.length,
+            atRiskCount: atRisk.length,
+            onTrackCount: onTrack.length,
+            excellingCount: excelling.length,
+            avgPerformance: Math.round(avgPerf),
+            avgAttendance: Math.round(avgAtt),
+            activeInterventions,
+            avgGPA: parseFloat(avgGPA.toFixed(1)),
+            performanceTrend: 3.2,
+            attendanceTrend: -0.8,
+        };
+    },
+
+    getAtRiskStudents: () => {
+        return Object.values(get().students)
+            .filter(s => s.status === 'at-risk')
+            .sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
+    },
+
+    getTopSkills: (limit = 5) => {
+        return [...get().subjectMastery]
+            .sort((a, b) => b.mastery - a.mastery)
+            .slice(0, limit);
+    },
+
+    getWeakestSkills: (limit = 5) => {
+        return [...get().subjectMastery]
+            .sort((a, b) => a.mastery - b.mastery)
+            .slice(0, limit);
     },
 }));
