@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInterventionStore, interventionLabels } from '@/lib/stores/intervention-store';
 import { History, CheckCircle, Clock, XCircle, X } from 'lucide-react';
@@ -14,9 +15,16 @@ interface ActivityTrackerPanelProps {
 export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [windowHeight, setWindowHeight] = useState(0);
+    const [isMounted, setIsMounted] = useState(false);
     const interventions = useInterventionStore((state) =>
         state.getInterventionsForEntity('school', schoolId)
     );
+
+    // Track when component is mounted for portal
+    useEffect(() => {
+        setIsMounted(true);
+        return () => setIsMounted(false);
+    }, []);
 
     // Track window height for SVG curve
     useEffect(() => {
@@ -69,126 +77,132 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                 )}
             </button>
 
-            {/* Backdrop */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.4 }}
-                        onClick={() => setIsOpen(false)}
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Slide-out Panel */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-                        className="fixed top-0 right-0 h-screen w-[420px] max-w-[90vw] bg-warm-charcoal z-[101] flex flex-col shadow-2xl"
-                    >
-                        {/* Curved left edge */}
-                        {windowHeight > 0 && (
-                            <CurvedMenuPath height={windowHeight} color="#1C1917" />
-                        )}
-
-                        {/* Header */}
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2, duration: 0.5 }}
-                            className="flex items-center justify-between p-6 border-b border-white/10"
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
-                                    <History className="w-6 h-6 text-cyan-400" />
-                                </div>
-                                <div>
-                                    <h2 className="font-serif text-2xl italic text-off-white">Activity</h2>
-                                    <p className="text-sm text-off-white/50">{interventions.length} actions</p>
-                                </div>
-                            </div>
-                            <button
+            {/* Portal for Backdrop and Panel - renders at document body level */}
+            {isMounted && createPortal(
+                <>
+                    {/* Backdrop */}
+                    <AnimatePresence>
+                        {isOpen && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.4 }}
                                 onClick={() => setIsOpen(false)}
-                                className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition-colors"
-                            >
-                                <X className="w-5 h-5 text-off-white/60" />
-                            </button>
-                        </motion.div>
+                                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]"
+                            />
+                        )}
+                    </AnimatePresence>
 
-                        {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {interventions.length === 0 ? (
+                    {/* Slide-out Panel */}
+                    <AnimatePresence>
+                        {isOpen && (
+                            <motion.div
+                                initial={{ x: '100%' }}
+                                animate={{ x: 0 }}
+                                exit={{ x: '100%' }}
+                                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+                                className="fixed top-0 right-0 h-screen w-[420px] max-w-[90vw] bg-warm-charcoal z-[101] flex flex-col shadow-2xl"
+                            >
+                                {/* Curved left edge */}
+                                {windowHeight > 0 && (
+                                    <CurvedMenuPath height={windowHeight} color="#1C1917" />
+                                )}
+
+                                {/* Header */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2, duration: 0.5 }}
+                                    className="flex items-center justify-between p-6 border-b border-white/10"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                                            <History className="w-6 h-6 text-cyan-400" />
+                                        </div>
+                                        <div>
+                                            <h2 className="font-serif text-2xl italic text-off-white">Activity</h2>
+                                            <p className="text-sm text-off-white/50">{interventions.length} actions</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsOpen(false)}
+                                        className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition-colors"
+                                    >
+                                        <X className="w-5 h-5 text-off-white/60" />
+                                    </button>
+                                </motion.div>
+
+                                {/* Content */}
+                                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                                    {interventions.length === 0 ? (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.3 }}
+                                            className="text-center py-20"
+                                        >
+                                            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 flex items-center justify-center">
+                                                <History className="w-10 h-10 text-off-white/30" />
+                                            </div>
+                                            <p className="text-xl font-medium text-off-white/60">No actions yet</p>
+                                            <p className="text-sm text-off-white/40 mt-2 max-w-[200px] mx-auto">
+                                                Complete an insight action to see your history here
+                                            </p>
+                                        </motion.div>
+                                    ) : (
+                                        interventions.map((intervention, index) => {
+                                            const info = interventionLabels[intervention.type];
+                                            return (
+                                                <motion.div
+                                                    key={intervention.id}
+                                                    initial={{ opacity: 0, x: 40 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{
+                                                        delay: 0.2 + (index * 0.08),
+                                                        duration: 0.5,
+                                                        ease: [0.76, 0, 0.24, 1]
+                                                    }}
+                                                    className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-colors group"
+                                                >
+                                                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-acid-lime/10 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                                        {info.icon}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="font-medium text-off-white">{info.label}</span>
+                                                            {statusIcon(intervention.status)}
+                                                        </div>
+                                                        <p className="text-sm text-off-white/50 truncate">
+                                                            {intervention.entityName}
+                                                        </p>
+                                                        <p className="text-xs text-off-white/30 mt-2">
+                                                            {formatTime(intervention.createdAt)}
+                                                        </p>
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+
+                                {/* Footer */}
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="text-center py-20"
+                                    transition={{ delay: 0.4 }}
+                                    className="p-4 border-t border-white/10 bg-stone-black/30"
                                 >
-                                    <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 flex items-center justify-center">
-                                        <History className="w-10 h-10 text-off-white/30" />
-                                    </div>
-                                    <p className="text-xl font-medium text-off-white/60">No actions yet</p>
-                                    <p className="text-sm text-off-white/40 mt-2 max-w-[200px] mx-auto">
-                                        Complete an insight action to see your history here
+                                    <p className="text-xs text-center text-off-white/30">
+                                        Actions are logged for compliance
                                     </p>
                                 </motion.div>
-                            ) : (
-                                interventions.map((intervention, index) => {
-                                    const info = interventionLabels[intervention.type];
-                                    return (
-                                        <motion.div
-                                            key={intervention.id}
-                                            initial={{ opacity: 0, x: 40 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{
-                                                delay: 0.2 + (index * 0.08),
-                                                duration: 0.5,
-                                                ease: [0.76, 0, 0.24, 1]
-                                            }}
-                                            className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-colors group"
-                                        >
-                                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-acid-lime/10 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                                                {info.icon}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-medium text-off-white">{info.label}</span>
-                                                    {statusIcon(intervention.status)}
-                                                </div>
-                                                <p className="text-sm text-off-white/50 truncate">
-                                                    {intervention.entityName}
-                                                </p>
-                                                <p className="text-xs text-off-white/30 mt-2">
-                                                    {formatTime(intervention.createdAt)}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })
-                            )}
-                        </div>
-
-                        {/* Footer */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="p-4 border-t border-white/10 bg-stone-black/30"
-                        >
-                            <p className="text-xs text-center text-off-white/30">
-                                Actions are logged for compliance
-                            </p>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </>,
+                document.body
+            )}
         </>
     );
 }
