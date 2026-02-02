@@ -4,46 +4,27 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInterventionStore, interventionLabels } from '@/lib/stores/intervention-store';
 import { History, CheckCircle, Clock, XCircle, X } from 'lucide-react';
+import { CurvedMenuPath } from '@/components/ui/CurvedMenuPath';
 
 interface ActivityTrackerPanelProps {
     schoolId: string;
 }
 
-// Curved SVG edge component
-function CurvedEdge() {
-    const [height, setHeight] = useState(800);
-
-    useEffect(() => {
-        setHeight(window.innerHeight);
-        const handleResize = () => setHeight(window.innerHeight);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const initialPath = `M100 0 L100 0 L100 ${height} L100 ${height} Q-50 ${height / 2} 100 0`;
-    const targetPath = `M100 0 L100 0 L100 ${height} L100 ${height} Q100 ${height / 2} 100 0`;
-
-    return (
-        <svg
-            className="absolute top-0 left-0 w-[100px] h-full pointer-events-none"
-            style={{ transform: 'translateX(-99px)' }}
-        >
-            <motion.path
-                initial={{ d: initialPath }}
-                animate={{ d: targetPath }}
-                exit={{ d: initialPath }}
-                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-                fill="#1C1917"
-            />
-        </svg>
-    );
-}
 
 export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [windowHeight, setWindowHeight] = useState(0);
     const interventions = useInterventionStore((state) =>
         state.getInterventionsForEntity('school', schoolId)
     );
+
+    // Track window height for SVG curve
+    useEffect(() => {
+        const updateHeight = () => setWindowHeight(window.innerHeight);
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
 
     const formatTime = (dateString: string) => {
         const date = new Date(dateString);
@@ -113,7 +94,9 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                         className="fixed top-0 right-0 h-screen w-[420px] max-w-[90vw] bg-warm-charcoal z-[101] flex flex-col shadow-2xl"
                     >
                         {/* Curved left edge */}
-                        <CurvedEdge />
+                        {windowHeight > 0 && (
+                            <CurvedMenuPath height={windowHeight} color="#1C1917" />
+                        )}
 
                         {/* Header */}
                         <motion.div
