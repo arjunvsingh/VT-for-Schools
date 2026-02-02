@@ -15,7 +15,7 @@ export function TopBar() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-black border border-white/10">
                     <div className="h-4 w-4 rounded-full bg-acid-lime" />
                 </div>
-                <span className="font-serif italic text-xl tracking-wide hidden md:block">Orbital Command</span>
+                <span className="font-serif italic text-xl tracking-wide hidden md:block">Varsity Tutors</span>
             </div>
 
             <div className="pointer-events-auto absolute left-1/2 top-4 -translate-x-1/2 hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-off-white/5 p-1 backdrop-blur-md">
@@ -24,7 +24,7 @@ export function TopBar() {
                         switch (name) {
                             case 'Dashboard': return '/';
                             case 'Districts': return '/district/1';
-                            case 'Schools': return '/school/s1';
+                            case 'Schools': return '/schools';
                             case 'Teachers': return '/teachers';
                             case 'Students': return '/students';
                             default: return '/';

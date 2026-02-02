@@ -1,126 +1,162 @@
 'use client';
 
+import { useState } from 'react';
 import { PageTransition } from '@/components/layout/PageTransition';
 import DistrictMap from '@/components/district/DistrictMap';
+import { SchoolInsightsPanel } from '@/components/district/SchoolInsightsPanel';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { BackLink } from '@/components/navigation';
-import { TrendingUp, AlertTriangle, Users, Zap } from 'lucide-react';
-import Link from 'next/link';
+import { TrendingUp, AlertTriangle, Zap, ArrowRight, FileText, Radio as Broadcast, Users } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function DistrictPage({ params }: { params: { id: string } }) {
     const district = useDataStore((state) => state.getDistrict(params.id));
-    const schools = useDataStore((state) => state.getSchoolsForDistrict(params.id));
+    const [selectedSchoolId, setSelectedSchoolId] = useState<string | null>(null);
 
     // Fallback for invalid district ID
     const districtName = district?.name ?? `District ${params.id}`;
     const performance = district?.performance ?? 0;
-    const totalStudents = district?.totalStudents ?? 0;
     const status = district?.status ?? 'good';
 
-    // Get schools with alerts
-    const alertSchools = schools.filter(s => s.status === 'alert' || s.status === 'warning');
-
     return (
-        <PageTransition className="p-4 md:p-8 pt-24 min-h-screen flex flex-col gap-6">
+        <PageTransition className="p-4 md:p-8 pt-20 md:pt-24 min-h-screen flex flex-col gap-6">
 
             {/* Header */}
-            <header className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
+            <header className="flex items-center justify-between mt-4">
+                <div className="flex flex-col gap-2">
                     <BackLink href="/" label="Back to State" />
                     <h1 className="font-serif text-4xl italic">{districtName}</h1>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="px-4 py-2 bg-white/5 rounded-full border border-white/10 text-sm font-mono flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${status === 'good' ? 'bg-green-500' : status === 'warning' ? 'bg-orange-500' : 'bg-red-500'} animate-pulse`} />
-                        Status: {status === 'good' ? 'Operational' : status === 'warning' ? 'Needs Attention' : 'Critical'}
-                    </div>
+                    {/* Status pill removed as requested */}
                 </div>
             </header>
 
             {/* Canvas & Sidebar Layout */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-12rem)]">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[500px] lg:h-[calc(100vh-12rem)]">
 
                 {/* Main Canvas */}
-                <div className="lg:col-span-3 h-full relative group">
+                <div className="lg:col-span-3 h-[500px] lg:h-full relative group">
                     <div className="absolute top-4 left-4 z-10 bg-stone-black/80 backdrop-blur border border-white/10 px-3 py-1 rounded-lg text-xs text-off-white/60">
-                        INTERACTIVE MAP • ZOOM/PAN ENABLED
+                        INTERACTIVE MAP • CLICK A SCHOOL FOR INSIGHTS
                     </div>
-                    <DistrictMap />
+                    <DistrictMap
+                        selectedSchoolId={selectedSchoolId}
+                        onSchoolSelect={setSelectedSchoolId}
+                    />
                 </div>
 
-                {/* Sidebar Stats */}
-                <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar">
-                    <BentoCard
-                        title="District Insights"
-                        icon={<TrendingUp className="text-acid-lime" />}
-                        className="h-[180px]"
-                        glow
-                    >
-                        <div className="flex-1 w-full h-full bg-gradient-to-br from-acid-lime/5 to-transparent rounded-xl flex flex-col justify-end p-2 gap-2">
-                            <div className="flex justify-between items-end">
-                                <span className="text-4xl font-serif text-acid-lime">{performance}%</span>
-                                <span className="text-xs text-off-white/60 mb-1">Avg. Performance</span>
-                            </div>
-                            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-acid-lime shadow-[0_0_10px_rgba(212,242,104,0.5)]" style={{ width: `${performance}%` }} />
-                            </div>
-                        </div>
-                    </BentoCard>
+                {/* Sidebar - Contextual based on selection */}
+                <div className="flex flex-col gap-6 overflow-y-auto no-scrollbar max-h-[calc(100vh-10rem)] pb-4">
+                    <AnimatePresence mode="wait">
+                        {selectedSchoolId ? (
+                            <motion.div
+                                key="school-panel"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="h-full"
+                            >
+                                <SchoolInsightsPanel
+                                    schoolId={selectedSchoolId}
+                                    onClose={() => setSelectedSchoolId(null)}
+                                />
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="district-panel"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex flex-col gap-6"
+                            >
+                                <BentoCard
+                                    title="Urgent Alerts"
+                                    icon={<AlertTriangle className="text-red-400" />}
+                                    className="h-auto min-h-[200px]"
+                                    glow
+                                >
+                                    <div className="flex flex-col gap-5 mt-4">
+                                        <div className="flex flex-col gap-3 p-4 rounded-xl bg-red-400/5 border border-red-400/10 hover:bg-red-400/10 transition-colors group">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-sm text-red-200 font-bold uppercase tracking-wider">Math Scores Critical</span>
+                                                    <span className="text-xs text-off-white/60">Roosevelt Elem • Drop &gt; 15%</span>
+                                                </div>
+                                                <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                                            </div>
+                                            <button
+                                                onClick={() => setSelectedSchoolId('s2')}
+                                                className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-400/10 text-red-300 text-xs font-bold uppercase tracking-wider hover:bg-red-400/20 transition-colors"
+                                            >
+                                                Investigate <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
 
-                    <BentoCard
-                        title="Active Alerts"
-                        icon={<AlertTriangle className="text-red-400" />}
-                        className="h-[160px]"
-                        glow
-                    >
-                        <div className="flex flex-col gap-2 mt-auto">
-                            <Link href="/school/s2" className="flex items-center gap-3 p-2 rounded-lg bg-red-400/5 border border-red-400/10 hover:bg-red-400/10 transition-colors">
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-red-100 font-medium">Roosevelt Elem</span>
-                                    <span className="text-[10px] text-red-400/60">Low Math Scores</span>
-                                </div>
-                            </Link>
-                            <Link href="/school/s5" className="flex items-center gap-3 p-2 rounded-lg bg-orange-400/5 border border-orange-400/10 hover:bg-orange-400/10 transition-colors">
-                                <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0" />
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-orange-100 font-medium">Adams Element</span>
-                                    <span className="text-[10px] text-orange-400/60">Staff Shortage</span>
-                                </div>
-                            </Link>
-                        </div>
-                    </BentoCard>
+                                        <div className="flex flex-col gap-3 p-4 rounded-xl bg-orange-400/5 border border-orange-400/10 hover:bg-orange-400/10 transition-colors group">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-sm text-orange-200 font-bold uppercase tracking-wider">Staff Shortage</span>
+                                                    <span className="text-xs text-off-white/60">Adams Elem • 3 Unfilled Roles</span>
+                                                </div>
+                                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                                            </div>
+                                            <button
+                                                onClick={() => setSelectedSchoolId('s5')}
+                                                className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-orange-400/10 text-orange-300 text-xs font-bold uppercase tracking-wider hover:bg-orange-400/20 transition-colors"
+                                            >
+                                                Review Allocation <ArrowRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </BentoCard>
 
-                    <BentoCard
-                        title="Quick Actions"
-                        icon={<Zap className="text-acid-lime" />}
-                        className="h-[160px]"
-                        glow
-                    >
-                        <div className="flex flex-col gap-2 mt-auto">
-                            <ActionButton
-                                type="schedule_meeting"
-                                entityType="district"
-                                entityId={params.id}
-                                entityName={districtName}
-                                variant="secondary"
-                                size="sm"
-                                className="w-full justify-center"
-                            />
-                            <ActionButton
-                                type="send_email"
-                                entityType="district"
-                                entityId={params.id}
-                                entityName={districtName}
-                                variant="secondary"
-                                size="sm"
-                                className="w-full justify-center"
-                            />
-                        </div>
-                    </BentoCard>
+                                <BentoCard
+                                    title="District Actions"
+                                    icon={<Zap className="text-acid-lime" />}
+                                    className="h-auto min-h-[180px]"
+                                    glow
+                                >
+                                    <div className="flex flex-col gap-4 mt-4">
+                                        <button className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-left group">
+                                            <div className="bg-acid-lime/10 p-2 rounded-lg text-acid-lime group-hover:text-white group-hover:bg-acid-lime transition-colors">
+                                                <FileText className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-sm font-bold text-off-white">Generate Board Report</span>
+                                                <span className="text-xs text-off-white/50">Export PDF Summary</span>
+                                            </div>
+                                        </button>
+
+                                        <button className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-left group">
+                                            <div className="bg-red-400/10 p-2 rounded-lg text-red-400 group-hover:text-white group-hover:bg-red-500 transition-colors">
+                                                <Broadcast className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-sm font-bold text-off-white">Broadcast Alert</span>
+                                                <span className="text-xs text-off-white/50">Send to all principals</span>
+                                            </div>
+                                        </button>
+
+                                        <button className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-left group">
+                                            <div className="bg-acid-lime/10 p-2 rounded-lg text-acid-lime group-hover:text-white group-hover:bg-acid-lime transition-colors">
+                                                <Users className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-sm font-bold text-off-white">Staffing Review</span>
+                                                <span className="text-xs text-off-white/50">Analyze allocation</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </BentoCard>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
             </div>

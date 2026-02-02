@@ -37,6 +37,7 @@ const generateMockActivities = (): ActivityItem[] => {
             entityId: 's1',
             entityName: 'Lincoln High School',
             isRead: false,
+            interventionType: 'send_accolades',
         },
         {
             id: 'a2',
@@ -106,6 +107,7 @@ const generateMockActivities = (): ActivityItem[] => {
             entityId: 'st3',
             entityName: 'Emma Johnson',
             isRead: true,
+            interventionType: 'send_accolades',
         },
     ];
 };
@@ -119,6 +121,7 @@ interface ActivityState {
     addActivity: (item: Omit<ActivityItem, 'id' | 'timestamp' | 'isRead'>) => void;
     markAsRead: (id: string) => void;
     markAllAsRead: () => void;
+    removeActivity: (id: string) => void;
 
     // Selectors
     getRecentActivities: (count?: number) => ActivityItem[];
@@ -152,6 +155,12 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     markAllAsRead: () => {
         set((state) => ({
             activities: state.activities.map((a) => ({ ...a, isRead: true })),
+        }));
+    },
+
+    removeActivity: (id) => {
+        set((state) => ({
+            activities: state.activities.filter((a) => a.id !== id),
         }));
     },
 

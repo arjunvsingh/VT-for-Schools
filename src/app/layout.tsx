@@ -12,12 +12,14 @@ import { NotesPanel } from "@/components/ui/NotesPanel";
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
   subsets: ["latin"],
+  adjustFontFallback: false,
 });
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   style: ["normal", "italic"],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

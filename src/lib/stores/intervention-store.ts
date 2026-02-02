@@ -12,7 +12,8 @@ export type InterventionType =
     | 'flag_for_review'
     | 'assign_mentor'
     | 'schedule_tutoring'
-    | 'parent_outreach';
+    | 'parent_outreach'
+    | 'send_accolades';
 
 export type InterventionStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -78,6 +79,11 @@ export const interventionLabels: Record<InterventionType, { label: string; icon:
         label: 'Contact Parent',
         icon: '📞',
         description: 'Initiate parent/guardian communication',
+    },
+    send_accolades: {
+        label: 'Send Accolades',
+        icon: '🏆',
+        description: 'Send official recognition for achievement',
     },
 };
 

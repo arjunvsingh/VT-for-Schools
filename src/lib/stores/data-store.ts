@@ -21,6 +21,12 @@ export interface SchoolGoals {
     tutoringEngagement: { current: number; target: number };
 }
 
+export interface SchoolAISummary {
+    headline: string;
+    details: string[];
+    suggestedActions: string[];
+}
+
 export interface School {
     id: string;
     districtId: string;
@@ -33,6 +39,7 @@ export interface School {
     attendance: number;
     status: 'good' | 'warning' | 'alert';
     goals?: SchoolGoals;
+    aiSummary?: SchoolAISummary;
 }
 
 export interface Teacher {
@@ -116,6 +123,15 @@ const mockSchools: Record<string, School> = {
             attendance: { current: 94, target: 95 },// Close but not met  
             tutoringEngagement: { current: 88, target: 85 }, // EXCEEDED
         },
+        aiSummary: {
+            headline: 'Strong performance with minor math gap',
+            details: [
+                'Reading scores exceeded target by 1%',
+                'Math dept needs 2% improvement to meet goal',
+                '1 teacher flagged for support (John Doe - Math)',
+            ],
+            suggestedActions: ['Schedule math dept review', 'Request tutoring bridge for flagged teacher'],
+        },
     },
     's2': {
         id: 's2',
@@ -134,6 +150,16 @@ const mockSchools: Record<string, School> = {
             attendance: { current: 85, target: 92 },// Behind
             tutoringEngagement: { current: 48, target: 70 }, // Needs significant improvement
         },
+        aiSummary: {
+            headline: '2 teachers underperforming, attendance dropping',
+            details: [
+                'Michael Brown (Science) rating at 2.8 - flagged',
+                'Attendance down 7% from target',
+                'Math scores 16% below district average',
+                '22% tutoring engagement gap detected',
+            ],
+            suggestedActions: ['Request bridge for Michael Brown', 'Contact principal immediately', 'Deploy attendance intervention'],
+        },
     },
     's3': {
         id: 's3',
@@ -146,6 +172,21 @@ const mockSchools: Record<string, School> = {
         performance: 88,
         attendance: 91,
         status: 'good',
+        goals: {
+            reading: { current: 87, target: 85 },   // ACHIEVED
+            math: { current: 89, target: 88 },      // ACHIEVED
+            attendance: { current: 91, target: 93 }, // SLIGHT GAP
+            tutoringEngagement: { current: 72, target: 75 }, // SLIGHT GAP
+        },
+        aiSummary: {
+            headline: 'Solid mid-tier performer',
+            details: [
+                'All core metrics within acceptable range',
+                'Emily Chen (Math Dept Head) excelling at 4.7 rating',
+                'Attendance stable at 91%',
+            ],
+            suggestedActions: ['Review for potential excellence program'],
+        },
     },
     's4': {
         id: 's4',
@@ -158,6 +199,21 @@ const mockSchools: Record<string, School> = {
         performance: 95,
         attendance: 96,
         status: 'good',
+        goals: {
+            reading: { current: 96, target: 94 },   // ACHIEVED
+            math: { current: 94, target: 92 },      // ACHIEVED
+            attendance: { current: 96, target: 95 }, // ACHIEVED
+            tutoringEngagement: { current: 92, target: 88 }, // ACHIEVED
+        },
+        aiSummary: {
+            headline: 'Top performer in district',
+            details: [
+                'Highest performance score (95%)',
+                'Best attendance rate (96%)',
+                'Model school for tutoring integration',
+            ],
+            suggestedActions: ['Document best practices', 'Share methodology with struggling schools'],
+        },
     },
     's5': {
         id: 's5',
@@ -170,6 +226,21 @@ const mockSchools: Record<string, School> = {
         performance: 81,
         attendance: 89,
         status: 'warning',
+        goals: {
+            reading: { current: 79, target: 84 },   // GAP
+            math: { current: 76, target: 82 },      // SIGNIFICANT GAP
+            attendance: { current: 89, target: 92 }, // GAP
+            tutoringEngagement: { current: 45, target: 60 }, // GAP
+        },
+        aiSummary: {
+            headline: 'Staff shortage impacting performance',
+            details: [
+                'Currently 3 unfilled teaching positions',
+                'Substitute coverage at 40% this month',
+                'Student-teacher ratio above recommended',
+            ],
+            suggestedActions: ['Prioritize hiring', 'Request substitute support', 'Contact HR'],
+        },
     },
 };
 

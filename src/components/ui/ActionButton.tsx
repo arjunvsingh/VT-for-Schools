@@ -20,6 +20,7 @@ interface ActionButtonProps {
     className?: string;
     showIcon?: boolean;
     customLabel?: string;
+    onComplete?: () => void;
 }
 
 export function ActionButton({
@@ -32,6 +33,7 @@ export function ActionButton({
     className,
     showIcon = true,
     customLabel,
+    onComplete,
 }: ActionButtonProps) {
     const triggerIntervention = useInterventionStore((state) => state.triggerIntervention);
     const [state, setState] = useState<'idle' | 'loading' | 'success'>('idle');
@@ -50,10 +52,10 @@ export function ActionButton({
         setTimeout(() => {
             setState('success');
 
-            // Reset after showing success
+            // Call onComplete after success animation, then remove the insight
             setTimeout(() => {
-                setState('idle');
-            }, 2000);
+                onComplete?.();
+            }, 1500);
         }, 800);
     };
 

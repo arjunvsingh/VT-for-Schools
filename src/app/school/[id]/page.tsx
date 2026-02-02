@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { ActionButton } from '@/components/ui/ActionButton';
 import PerformanceHeatmap from '@/components/school/PerformanceHeatmap';
 import ProjectionGraph from '@/components/school/ProjectionGraph';
 import { GoalsDashboard } from '@/components/school/GoalsDashboard';
+import { ActivityTrackerPanel } from '@/components/school/ActivityTrackerPanel';
 import { BackLink } from '@/components/navigation';
 import { Users, Zap, BookOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -15,6 +18,13 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
     const school = useDataStore((state) => state.getSchool(params.id));
     const teachers = useDataStore((state) => state.getTeachersForSchool(params.id));
     const students = useDataStore((state) => state.getStudentsForSchool(params.id));
+
+    // Track dismissed insights
+    const [dismissedInsights, setDismissedInsights] = useState<Set<string>>(new Set());
+
+    const dismissInsight = (insightId: string) => {
+        setDismissedInsights(prev => new Set(prev).add(insightId));
+    };
 
     // Fallback for invalid school ID
     const schoolName = school?.name ?? 'Unknown School';
@@ -26,7 +36,7 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
     const attendance = school?.attendance ?? 0;
 
     return (
-        <PageTransition className="p-4 md:p-8 pt-24 min-h-screen flex flex-col gap-8 max-w-7xl mx-auto">
+        <PageTransition className="p-4 md:p-8 pt-48 min-h-screen flex flex-col gap-8 max-w-7xl mx-auto">
 
             {/* Header */}
             <header className="flex flex-col gap-4">
@@ -36,7 +46,10 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                         <h1 className="font-serif text-5xl italic">{schoolName}</h1>
                         <p className="text-off-white/60 font-mono text-sm">ID: {params.id} • PRINCIPAL: {principal}</p>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex items-center gap-4">
+                        {/* Activity Button */}
+                        <ActivityTrackerPanel schoolId={params.id} />
+                        {/* Grade */}
                         <div className="flex flex-col items-end">
                             <span className="text-3xl font-bold">{grade}</span>
                             <span className="text-[10px] text-off-white/40 uppercase tracking-widest">Grade</span>
@@ -45,98 +58,152 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                 </div>
             </header>
 
-            {/* Goals Dashboard */}
-            {school?.goals && (
-                <GoalsDashboard goals={school.goals} />
-            )}
 
-            {/* Top Insights & Actions */}
-            <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Top Insights & Actions - Full Width */}
+            <section>
                 <BentoCard
                     title="Immediate Insights"
                     icon={<Zap className="text-acid-lime" />}
-                    className="lg:col-span-2 min-h-[220px]"
+                    className="min-h-[280px]"
                     glow
                 >
                     <div className="flex flex-col gap-4 mt-2">
-                        {/* Dynamic insights based on goals */}
-                        {school?.goals && school.goals.math.current < school.goals.math.target && (
-                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-red-200">Math Proficiency Below Target</span>
-                                    <span className="text-xs text-red-200/60">
-                                        Currently at {school.goals.math.current}% (target: {school.goals.math.target}%).
-                                        {school.goals.math.target - school.goals.math.current > 10
-                                            ? ' Urgent intervention recommended.'
-                                            : ' Additional tutoring may help.'}
-                                    </span>
-                                </div>
-                                <ActionButton
-                                    type="schedule_tutoring"
-                                    entityType="school"
-                                    entityId={params.id}
-                                    entityName={`${schoolName} Math Program`}
-                                    variant="secondary"
-                                    size="sm"
-                                />
-                            </div>
-                        )}
+                        <AnimatePresence mode="popLayout">
+                            {/* Math Insight */}
+                            {school?.goals && school.goals.math.current < school.goals.math.target && !dismissedInsights.has('math') && (
+                                <motion.div
+                                    key="math-insight"
+                                    initial={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center justify-between"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-bold text-red-200">Math Proficiency Below Target</span>
+                                        <span className="text-sm text-red-200/60">
+                                            Currently at {school.goals.math.current}% (target: {school.goals.math.target}%).
+                                            {school.goals.math.target - school.goals.math.current > 10
+                                                ? ' Urgent intervention recommended.'
+                                                : ' Additional tutoring may help.'}
+                                        </span>
+                                    </div>
+                                    <ActionButton
+                                        type="schedule_tutoring"
+                                        entityType="school"
+                                        entityId={params.id}
+                                        entityName={`${schoolName} Math Program`}
+                                        variant="secondary"
+                                        size="sm"
+                                        onComplete={() => dismissInsight('math')}
+                                    />
+                                </motion.div>
+                            )}
 
-                        {school?.goals && school.goals.attendance.current < school.goals.attendance.target && (
-                            <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-orange-200">Attendance Tracking Behind</span>
-                                    <span className="text-xs text-orange-200/60">
-                                        {school.goals.attendance.current}% attendance vs {school.goals.attendance.target}% goal.
-                                        Review chronic absentees.
-                                    </span>
-                                </div>
-                                <ActionButton
-                                    type="parent_outreach"
-                                    entityType="school"
-                                    entityId={params.id}
-                                    entityName={`${schoolName} Attendance`}
-                                    variant="secondary"
-                                    size="sm"
-                                />
-                            </div>
-                        )}
+                            {/* Attendance Insight */}
+                            {school?.goals && school.goals.attendance.current < school.goals.attendance.target && !dismissedInsights.has('attendance') && (
+                                <motion.div
+                                    key="attendance-insight"
+                                    initial={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-bold text-orange-200">Attendance Tracking Behind</span>
+                                        <span className="text-sm text-orange-200/60">
+                                            {school.goals.attendance.current}% attendance vs {school.goals.attendance.target}% goal.
+                                            Review chronic absentees.
+                                        </span>
+                                    </div>
+                                    <ActionButton
+                                        type="parent_outreach"
+                                        entityType="school"
+                                        entityId={params.id}
+                                        entityName={`${schoolName} Attendance`}
+                                        variant="secondary"
+                                        size="sm"
+                                        onComplete={() => dismissInsight('attendance')}
+                                    />
+                                </motion.div>
+                            )}
 
-                        {school?.goals && school.goals.reading.current >= school.goals.reading.target && (
-                            <div className="p-3 bg-acid-lime/10 border border-acid-lime/20 rounded-lg flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-acid-lime">🎉 Reading Goal Achieved!</span>
-                                    <span className="text-xs text-acid-lime/60">
-                                        {school.goals.reading.current}% proficiency exceeds {school.goals.reading.target}% target.
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                            {/* Reading Success */}
+                            {school?.goals && school.goals.reading.current >= school.goals.reading.target && !dismissedInsights.has('reading') && (
+                                <motion.div
+                                    key="reading-insight"
+                                    initial={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="p-4 bg-acid-lime/10 border border-acid-lime/20 rounded-lg flex items-center justify-between"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-bold text-acid-lime">🎉 Reading Goal Achieved!</span>
+                                        <span className="text-sm text-acid-lime/60">
+                                            {school.goals.reading.current}% proficiency exceeds {school.goals.reading.target}% target.
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            )}
 
-                        {school?.goals && school.goals.tutoringEngagement.current < school.goals.tutoringEngagement.target && (
-                            <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-cyan-200">Tutoring Engagement Low</span>
-                                    <span className="text-xs text-cyan-200/60">
-                                        Only {school.goals.tutoringEngagement.current}% of at-risk students enrolled (target: {school.goals.tutoringEngagement.target}%).
-                                    </span>
-                                </div>
-                                <ActionButton
-                                    type="send_email"
-                                    entityType="school"
-                                    entityId={params.id}
-                                    entityName={`${schoolName} Tutoring Team`}
-                                    variant="secondary"
-                                    size="sm"
-                                />
-                            </div>
-                        )}
+                            {/* Tutoring Engagement Insight */}
+                            {school?.goals && school.goals.tutoringEngagement.current < school.goals.tutoringEngagement.target && !dismissedInsights.has('tutoring') && (
+                                <motion.div
+                                    key="tutoring-insight"
+                                    initial={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-between"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-bold text-cyan-200">Tutoring Engagement Low</span>
+                                        <span className="text-sm text-cyan-200/60">
+                                            Only {school.goals.tutoringEngagement.current}% of at-risk students enrolled (target: {school.goals.tutoringEngagement.target}%).
+                                        </span>
+                                    </div>
+                                    <ActionButton
+                                        type="send_email"
+                                        entityType="school"
+                                        entityId={params.id}
+                                        entityName={`${schoolName} Tutoring Team`}
+                                        variant="secondary"
+                                        size="sm"
+                                        onComplete={() => dismissInsight('tutoring')}
+                                    />
+                                </motion.div>
+                            )}
+
+                            {/* Empty state when all insights are dismissed */}
+                            {dismissedInsights.size >= 3 && (
+                                <motion.div
+                                    key="all-done"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-8 text-off-white/60"
+                                >
+                                    <span className="text-3xl mb-2 block">✅</span>
+                                    <p className="font-medium">All caught up!</p>
+                                    <p className="text-sm text-off-white/40">No pending actions require your attention.</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </BentoCard>
+            </section>
 
+            {/* Goals Dashboard & At a Glance */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Goals Dashboard */}
+                {school?.goals && (
+                    <div className="lg:col-span-2">
+                        <GoalsDashboard goals={school.goals} />
+                    </div>
+                )}
+
+                {/* At a Glance */}
                 <BentoCard
                     title="At a Glance"
                     icon={<Users className="text-blue-400" />}
+                    className="lg:col-span-1"
                     glow
                 >
                     <div className="grid grid-cols-2 gap-4 mt-4 h-full">
@@ -173,7 +240,7 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     className="col-span-1"
                     glow
                 >
-                    <ProjectionGraph />
+                    <ProjectionGraph schoolId={params.id} />
                 </BentoCard>
 
                 <BentoCard

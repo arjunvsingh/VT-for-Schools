@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotesStore, Note } from '@/lib/stores/notes-store';
 import { X, MessageSquare, Pin, Trash2, Send, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CurvedMenuPath } from './CurvedMenuPath';
 
 function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -105,6 +106,15 @@ function NoteItem({ note, onDelete, onTogglePin }: NoteItemProps) {
 export function NotesPanel() {
     const { isPanelOpen, activeEntity, closePanel, notes, addNote, deleteNote, togglePin, getNotesForEntity } = useNotesStore();
     const [newNote, setNewNote] = useState('');
+    const [windowHeight, setWindowHeight] = useState(0);
+
+    // Track window height for SVG curve
+    useEffect(() => {
+        const updateHeight = () => setWindowHeight(window.innerHeight);
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+    }, []);
 
     if (!isPanelOpen || !activeEntity) return null;
 
@@ -126,13 +136,31 @@ export function NotesPanel() {
 
     return (
         <AnimatePresence>
+            {/* Backdrop overlay */}
             <motion.div
+                key="backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                onClick={closePanel}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[139]"
+            />
+
+            {/* Drawer with curved edge */}
+            <motion.div
+                key="drawer"
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-warm-charcoal border-l border-white/10 z-[140] flex flex-col"
+                transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+                className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-warm-charcoal z-[140] flex flex-col"
             >
+                {/* Curved SVG Path */}
+                {windowHeight > 0 && (
+                    <CurvedMenuPath height={windowHeight} color="#1C1917" />
+                )}
+
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
                     <div className="flex items-center gap-2">

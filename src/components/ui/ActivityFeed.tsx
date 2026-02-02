@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertTriangle, Lightbulb, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Trophy, AlertTriangle, Lightbulb, CheckCircle2, ExternalLink, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useActivityStore, ActivityItem, ActivityType } from '@/lib/stores/activity-store';
 import { ActionButton } from './ActionButton';
@@ -52,14 +52,14 @@ const typeConfig: Record<ActivityType, {
     },
     action: {
         icon: <CheckCircle2 className="w-4 h-4" />,
-        iconBg: 'bg-purple-500/20',
-        iconColor: 'text-purple-400',
+        iconBg: 'bg-orange-500/20',
+        iconColor: 'text-orange-400',
         label: 'Action',
-        borderColor: 'border-purple-500/20',
+        borderColor: 'border-orange-500/20',
     },
 };
 
-function ActivityCard({ item, index }: { item: ActivityItem; index: number }) {
+function ActivityCard({ item, index, onDismiss }: { item: ActivityItem; index: number; onDismiss: () => void }) {
     const config = typeConfig[item.type];
     const entityLink = item.entityType && item.entityId
         ? `/${item.entityType}/${item.entityId}`
@@ -78,12 +78,22 @@ function ActivityCard({ item, index }: { item: ActivityItem; index: number }) {
                 delay: index * 0.05,
             }}
             className={cn(
-                "p-3 rounded-lg border bg-white/5 hover:bg-white/[0.07] transition-colors",
+                "group p-3 rounded-lg border bg-white/5 hover:bg-white/[0.07] transition-colors relative",
                 config.borderColor,
                 !item.isRead && "ring-1 ring-white/10"
             )}
         >
-            <div className="flex items-start gap-3">
+            <div className="relative flex items-start gap-3">
+                {/* Dismiss Button */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDismiss();
+                    }}
+                    className="absolute -top-1 -right-1 text-off-white/20 hover:text-white hover:bg-white/10 rounded-full p-0.5 transition-all opacity-0 group-hover:opacity-100"
+                >
+                    <X className="w-3 h-3" />
+                </button>
                 {/* Icon */}
                 <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
@@ -109,8 +119,8 @@ function ActivityCard({ item, index }: { item: ActivityItem; index: number }) {
 
                     {/* Actions row */}
                     <div className="mt-2 flex items-center gap-2">
-                        {/* Intervention button for alerts */}
-                        {item.type === 'alert' && item.interventionType && item.entityId && item.entityType && (
+                        {/* Action button for any item with interventionType */}
+                        {item.interventionType && item.entityId && item.entityType && (
                             <ActionButton
                                 type={item.interventionType}
                                 entityType={item.entityType}
@@ -144,17 +154,26 @@ interface ActivityFeedProps {
 }
 
 export function ActivityFeed({
-    maxItems = 5,
+    maxItems = 20,
     className,
     showHeader = true,
 }: ActivityFeedProps) {
     const activities = useActivityStore((state) => state.activities);
     const unreadCount = useActivityStore((state) => state.getUnreadCount());
     const markAllAsRead = useActivityStore((state) => state.markAllAsRead);
+    const removeActivity = useActivityStore((state) => state.removeActivity);
+
+    // Fix hydration mismatch for relative times
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const recentActivities = useMemo(() => {
         return activities.slice(0, maxItems);
     }, [activities, maxItems]);
+
+    if (!mounted) return null;
 
     return (
         <div className={cn("flex flex-col", className)}>
@@ -183,10 +202,15 @@ export function ActivityFeed({
             )}
 
             {/* Activity list */}
-            <div className="flex flex-col gap-2 overflow-y-auto no-scrollbar">
+            <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1">
                 <AnimatePresence mode="popLayout">
                     {recentActivities.map((item, index) => (
-                        <ActivityCard key={item.id} item={item} index={index} />
+                        <ActivityCard
+                            key={item.id}
+                            item={item}
+                            index={index}
+                            onDismiss={() => removeActivity(item.id)}
+                        />
                     ))}
                 </AnimatePresence>
 
