@@ -15,18 +15,15 @@ export function useTransitionNavigate() {
 
         // Find the main content wrapper and fade it out
         const mainContent = document.querySelector('main') || document.body;
-        mainContent.style.transition = 'opacity 0.25s ease-out, transform 0.25s ease-out';
+        mainContent.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
         mainContent.style.opacity = '0';
         mainContent.style.transform = 'scale(0.98)';
 
         // Navigate after the fade-out completes
+        // Don't reset styles — the new page mounts a fresh <main>
         setTimeout(() => {
             router.push(url);
-            isNavigating.current = false;
-            // Reset styles for next navigation
-            mainContent.style.opacity = '';
-            mainContent.style.transform = '';
-        }, 250);
+        }, 200);
     }, [router]);
 
     return navigate;

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, TrendingUp, Building2, GraduationCap, ArrowRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useTransitionNavigate } from '@/components/layout/TransitionOverlay';
 
 // Types derived from store but kept local for component flexibility
 interface HealthSchool {
@@ -49,6 +50,7 @@ function getInsight(issue: string | undefined, type: 'school' | 'teacher'): stri
 
 export function SystemHealthMonitor({ schools, teachers, className }: SystemHealthMonitorProps) {
     const [activeTab, setActiveTab] = useState<Tab>('schools');
+    const navigate = useTransitionNavigate();
 
     // Filter for critical entities
     const criticalSchools = useMemo(() => {
@@ -173,6 +175,7 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 10 }}
                             transition={{ delay: i * 0.05 }}
+                            onClick={() => navigate(activeTab === 'schools' ? `/school/${item.id}` : `/teacher/${item.id}`)}
                             className="group relative flex flex-col gap-2 p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all cursor-pointer"
                         >
                             {/* Main Row */}
@@ -218,11 +221,9 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
 
                                 {/* Hover Action */}
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 bg-stone-900 shadow-xl rounded-md border border-white/10 p-1 flex gap-1 z-10">
-                                    <Link href={activeTab === 'schools' ? `/school/${item.id}` : `/teacher/${item.id}`}>
-                                        <button className="p-1.5 hover:bg-white/10 rounded text-off-white/80 hover:text-white">
-                                            <ArrowRight className="w-3 h-3" />
-                                        </button>
-                                    </Link>
+                                    <div className="p-1.5 hover:bg-white/10 rounded text-off-white/80 hover:text-white">
+                                        <ArrowRight className="w-3 h-3" />
+                                    </div>
                                 </div>
                             </div>
 
