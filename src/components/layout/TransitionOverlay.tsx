@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useRef, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Simple hook for smooth navigation - fades out current page before navigating
 export function useTransitionNavigate() {
@@ -31,7 +32,51 @@ export function useTransitionNavigate() {
     return navigate;
 }
 
-// Empty component - no overlay needed
+// Full-screen overlay that shows during route transitions
 export function TransitionOverlay() {
-    return null;
+    const pathname = usePathname();
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const prevPathRef = useRef(pathname);
+
+    useEffect(() => {
+        if (prevPathRef.current !== pathname) {
+            // Route changed — show overlay briefly
+            setIsTransitioning(true);
+            prevPathRef.current = pathname;
+
+            const timer = setTimeout(() => {
+                setIsTransitioning(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
+        }
+    }, [pathname]);
+
+    return (
+        <AnimatePresence>
+            {isTransitioning && (
+                <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.45, ease: [0.25, 0.4, 0.25, 1] }}
+                    className="fixed inset-0 z-[200] pointer-events-none"
+                >
+                    {/* Dark fade */}
+                    <div className="absolute inset-0 bg-stone-black/40" />
+
+                    {/* Acid-lime sweep line */}
+                    <motion.div
+                        initial={{ left: '-10%' }}
+                        animate={{ left: '110%' }}
+                        transition={{ duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
+                        className="absolute top-0 bottom-0 w-[2px]"
+                    >
+                        <div className="h-full w-full bg-gradient-to-b from-transparent via-acid-lime/60 to-transparent" />
+                        <div className="absolute top-0 bottom-0 -left-8 w-16 bg-gradient-to-r from-transparent via-acid-lime/10 to-transparent" />
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
 }

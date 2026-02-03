@@ -5,6 +5,7 @@ import { BentoCard } from '@/components/ui/BentoCard';
 import { SystemHealthMonitor } from '@/components/ui/SystemHealthMonitor';
 import { ActivityFeed } from '@/components/ui/ActivityFeed';
 import { AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useDataStore } from '@/lib/stores';
 import { useMemo } from 'react';
 
@@ -58,13 +59,26 @@ export default function Home() {
       <section className="lg:col-span-7 flex flex-col h-[calc(100vh-14rem)] relative">
         <div className="flex flex-col gap-4 mb-8 z-10 pointer-events-none">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-tight">
-            State of <br />
-            <span className="italic text-acid-lime">California</span> <br />
-            Schools
+            {['State of', 'California', 'Schools'].map((word, i) => (
+              <motion.span
+                key={word}
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.6, delay: 0.1 + i * 0.15, ease: [0.25, 0.4, 0.25, 1] }}
+                className={`block ${i === 1 ? 'italic text-acid-lime' : ''}`}
+              >
+                {word}
+              </motion.span>
+            ))}
           </h1>
-          <p className="text-off-white/60 text-lg max-w-md">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-off-white/60 text-lg max-w-md"
+          >
             Real-time district performance monitoring.
-          </p>
+          </motion.p>
         </div>
 
         {/* Map Container */}

@@ -33,7 +33,7 @@ export default function TeachersPage() {
     }, [teachers, schools]);
 
     return (
-        <PageTransition className="p-4 md:p-8 pt-24 min-h-screen max-w-7xl mx-auto flex flex-col gap-6">
+        <PageTransition className="p-4 md:p-8 pt-32 min-h-screen max-w-7xl mx-auto flex flex-col gap-6">
 
             {/* Header */}
             <div className="flex flex-col gap-4">

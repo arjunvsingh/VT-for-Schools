@@ -112,6 +112,13 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                                             variant="secondary"
                                             customLabel={rf.suggestedAction}
                                             className="w-full justify-center text-xs h-8"
+                                            modalContext={{
+                                                riskFactor: rf.detail,
+                                                metric: rf.metric ? `Current: ${rf.metric.current}, Target: ${rf.metric.threshold}` : undefined,
+                                                trend: rf.trend,
+                                                suggestedAction: rf.suggestedAction,
+                                                subject: rf.type,
+                                            }}
                                         />
                                     </div>
                                 ))}
@@ -146,6 +153,11 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                                                 size="sm"
                                                 variant="secondary"
                                                 customLabel="Take Action"
+                                                modalContext={{
+                                                    subject: area.subject,
+                                                    issue: area.issue,
+                                                    riskFactor: area.rootCause,
+                                                }}
                                             />
                                         </div>
                                     </div>

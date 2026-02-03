@@ -24,7 +24,7 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
     const status = teacher?.status ?? 'inactive';
 
     return (
-        <PageTransition className="p-4 md:p-8 pt-24 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto">
+        <PageTransition className="p-4 md:p-8 pt-32 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto">
 
             {/* Left Profile Sidebar */}
             <div className="lg:col-span-4 flex flex-col gap-6">
@@ -80,6 +80,11 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                                 variant="primary"
                                 size="md"
                                 className="w-full"
+                                modalContext={{
+                                    issue: teacher?.performanceIssues?.[0]?.type,
+                                    riskFactor: teacher?.performanceIssues?.[0]?.description,
+                                    severity: teacher?.performanceIssues?.[0]?.severity,
+                                }}
                             />
                         </div>
                     )}
