@@ -56,10 +56,10 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 items-start">
 
                 <BentoCard title="Performance Insights" icon={<CheckCircle className="text-acid-lime" />} glow>
-                    <div className="mt-auto flex flex-col gap-4">
+                    <div className="mt-2 flex flex-col gap-4">
                         <div className="p-3 rounded-lg bg-acid-lime/10 border border-acid-lime/20">
                             <h4 className="font-bold text-acid-lime text-sm mb-1">Excelling in Physics</h4>
                             <p className="text-xs text-off-white/80">Top 5% of class for 3 consecutive terms. Recommended for AP Track.</p>

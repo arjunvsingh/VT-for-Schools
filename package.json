@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-rc.0",
     "@react-three/drei": "^9.105.0",
     "@react-three/fiber": "^8.16.0",
     "@types/three": "^0.160.0",

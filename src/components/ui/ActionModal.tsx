@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2, Check } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
+import { AppScrollArea } from '@/components/ui/scroll-area';
 import {
     InterventionType,
     interventionLabels,
@@ -231,35 +232,37 @@ export function ActionModal({ isOpen, onClose, type, context, onComplete }: Acti
                         </div>
 
                         {/* Body */}
-                        <div className="px-6 py-4 flex flex-col gap-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                            {/* Subject */}
-                            <div>
-                                <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Subject</label>
-                                <input
-                                    value={subject}
-                                    onChange={(e) => setSubject(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white focus:outline-none focus:border-acid-lime/50 transition-colors"
-                                />
-                            </div>
+                        <AppScrollArea className="max-h-[60vh]">
+                            <div className="px-6 py-4 flex flex-col gap-4">
+                                {/* Subject */}
+                                <div>
+                                    <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Subject</label>
+                                    <input
+                                        value={subject}
+                                        onChange={(e) => setSubject(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white focus:outline-none focus:border-acid-lime/50 transition-colors"
+                                    />
+                                </div>
 
-                            {/* Content */}
-                            <div>
-                                <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Message</label>
-                                <textarea
-                                    value={body}
-                                    onChange={(e) => setBody(e.target.value)}
-                                    rows={12}
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white leading-relaxed focus:outline-none focus:border-acid-lime/50 transition-colors resize-none custom-scrollbar"
-                                />
-                            </div>
+                                {/* Content */}
+                                <div>
+                                    <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Message</label>
+                                    <textarea
+                                        value={body}
+                                        onChange={(e) => setBody(e.target.value)}
+                                        rows={12}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white leading-relaxed focus:outline-none focus:border-acid-lime/50 transition-colors resize-none"
+                                    />
+                                </div>
 
-                            {/* Recipient Tag */}
-                            <div className="flex items-center gap-2 text-xs text-off-white/40">
-                                <span className="px-2 py-1 rounded-md bg-white/5 border border-white/5">
-                                    {context.entityType}: {context.entityName}
-                                </span>
+                                {/* Recipient Tag */}
+                                <div className="flex items-center gap-2 text-xs text-off-white/40">
+                                    <span className="px-2 py-1 rounded-md bg-white/5 border border-white/5">
+                                        {context.entityType}: {context.entityName}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        </AppScrollArea>
 
                         {/* Footer */}
                         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/5">
