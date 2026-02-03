@@ -126,16 +126,16 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
                     <button
                         onClick={() => setActiveTab('schools')}
                         className={cn(
-                            "px-3 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-2",
+                            "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2",
                             activeTab === 'schools'
                                 ? "bg-stone-800 text-off-white shadow-sm"
                                 : "text-off-white/40 hover:text-off-white/60"
                         )}
                     >
-                        <Building2 className="w-3 h-3" />
+                        <Building2 className="w-3.5 h-3.5" />
                         Schools
                         {stats.schools > 0 && (
-                            <span className="bg-red-500/20 text-red-300 px-1.5 rounded-full text-[10px]">
+                            <span className="bg-red-500/20 text-red-300 px-1.5 rounded-full text-xs">
                                 {stats.schools}
                             </span>
                         )}
@@ -143,16 +143,16 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
                     <button
                         onClick={() => setActiveTab('teachers')}
                         className={cn(
-                            "px-3 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-2",
+                            "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2",
                             activeTab === 'teachers'
                                 ? "bg-stone-800 text-off-white shadow-sm"
                                 : "text-off-white/40 hover:text-off-white/60"
                         )}
                     >
-                        <GraduationCap className="w-3 h-3" />
+                        <GraduationCap className="w-3.5 h-3.5" />
                         Teachers
                         {stats.teachers > 0 && (
-                            <span className="bg-orange-500/20 text-orange-300 px-1.5 rounded-full text-[10px]">
+                            <span className="bg-orange-500/20 text-orange-300 px-1.5 rounded-full text-xs">
                                 {stats.teachers}
                             </span>
                         )}
@@ -190,18 +190,18 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
                                     {activeTab === 'schools' ? (
                                         <Building2 className="w-4 h-4 text-off-white/40" />
                                     ) : (
-                                        <div className="text-[10px] font-bold">{(item as HealthTeacher).rating}</div>
+                                        <div className="text-xs font-bold">{(item as HealthTeacher).rating}</div>
                                     )}
                                 </div>
 
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
-                                        <h4 className="text-sm font-medium text-off-white truncate group-hover:text-acid-lime transition-colors">
+                                        <h4 className="text-base font-medium text-off-white truncate group-hover:text-acid-lime transition-colors">
                                             {item.name}
                                         </h4>
                                     </div>
-                                    <p className="text-xs text-off-white/40 truncate">
+                                    <p className="text-sm text-off-white/40 truncate">
                                         {activeTab === 'schools'
                                             ? `Principal: ${(item as HealthSchool).principal}`
                                             : `${(item as HealthTeacher).schoolName}`}
@@ -210,7 +210,7 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
 
                                 {/* Issue Tag */}
                                 <div className={cn(
-                                    "text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/5 text-off-white/50 whitespace-nowrap",
+                                    "text-xs px-2 py-0.5 rounded bg-white/5 border border-white/5 text-off-white/50 whitespace-nowrap max-w-[120px] truncate",
                                     activeTab === 'schools' && (item as HealthSchool).status === 'alert' && "bg-red-500/10 text-red-300 border-red-500/20"
                                 )}>
                                     {item.issue || 'Requires Review'}
@@ -227,7 +227,7 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
                             </div>
 
                             {/* AI Insight Row */}
-                            <div className="ml-11 flex items-start gap-2 text-[10px] text-off-white/60 bg-stone-900/50 p-2 rounded border border-white/5">
+                            <div className="ml-11 flex items-start gap-2 text-xs text-off-white/60 bg-stone-900/50 p-2 rounded border border-white/5">
                                 <Sparkles className="w-3 h-3 text-acid-lime shrink-0 mt-0.5" />
                                 <span className="leading-tight">
                                     <strong className="text-acid-lime/90 font-normal">AI Insight:</strong> {getInsight(item.issue, activeTab === 'schools' ? 'school' : 'teacher')}
@@ -248,7 +248,7 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
             {/* View All */}
             <Link
                 href={activeTab === 'schools' ? "/schools" : "/teachers"}
-                className="text-xs text-center text-off-white/40 hover:text-acid-lime transition-colors mt-auto py-1 flex items-center justify-center gap-1 group"
+                className="text-sm text-center text-off-white/40 hover:text-acid-lime transition-colors mt-auto py-1 flex items-center justify-center gap-1 group"
             >
                 View all {activeTab}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
