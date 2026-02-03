@@ -132,13 +132,14 @@ export function ActionButton({
                 </span>
 
                 {/* Label */}
-                <span className="relative">
-                    {state === 'loading'
+                {(() => {
+                    const label = state === 'loading'
                         ? 'Processing...'
                         : state === 'success'
                             ? 'Done!'
-                            : (customLabel || info.label)}
-                </span>
+                            : (customLabel ?? info.label);
+                    return label ? <span className="relative">{label}</span> : null;
+                })()}
             </motion.button>
 
             {usesModal && (
