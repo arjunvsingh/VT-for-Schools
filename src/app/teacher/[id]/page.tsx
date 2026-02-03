@@ -5,8 +5,10 @@ import TeacherTimeline from '@/components/teacher/TeacherTimeline';
 import { BackLink } from '@/components/navigation';
 import { NotesButton } from '@/components/ui/NotesPanel';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { Mail, Phone, Award, Star, AlertCircle } from 'lucide-react';
+import { Mail, Phone, Award, Star, AlertCircle, MessageSquare } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
+import { Marquee } from '@/components/ui/marquee';
+import { cn } from '@/lib/utils';
 
 export default function TeacherPage({ params }: { params: { id: string } }) {
     const teacher = useDataStore((state) => state.getTeacher(params.id));
@@ -22,9 +24,10 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
     const rating = teacher?.rating ?? 0;
     const awards = teacher?.awards ?? [];
     const status = teacher?.status ?? 'inactive';
+    const feedback = teacher?.studentFeedback ?? [];
 
     return (
-        <PageTransition className="p-4 md:p-8 pt-32 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto">
+        <PageTransition className="p-4 md:p-8 pt-28 md:pt-36 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto items-start">
 
             {/* Left Profile Sidebar */}
             <div className="lg:col-span-4 flex flex-col gap-6">
@@ -42,15 +45,35 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                     </div>
 
                     <div className="flex gap-2 w-full mt-2">
-                        <button className="flex-1 py-2 bg-acid-lime text-stone-black rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
-                            Message
-                        </button>
-                        <button className="p-2 border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
-                            <Mail className="w-5 h-5" />
-                        </button>
-                        <button className="p-2 border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
-                            <Phone className="w-5 h-5" />
-                        </button>
+                        <ActionButton
+                            type="send_email"
+                            entityType="teacher"
+                            entityId={params.id}
+                            entityName={teacherName}
+                            variant="primary"
+                            size="md"
+                            customLabel="Message"
+                            className="flex-1"
+                        />
+                        <ActionButton
+                            type="send_email"
+                            entityType="teacher"
+                            entityId={params.id}
+                            entityName={teacherName}
+                            variant="secondary"
+                            size="md"
+                            customLabel=""
+                            modalContext={{ issue: `${role} correspondence` }}
+                        />
+                        <ActionButton
+                            type="schedule_call"
+                            entityType="teacher"
+                            entityId={params.id}
+                            entityName={teacherName}
+                            variant="secondary"
+                            size="md"
+                            customLabel=""
+                        />
                     </div>
 
                     <div className="w-full h-px bg-white/5 my-2" />
@@ -141,6 +164,26 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                     </BentoCard>
                 )}
 
+                {/* Student Feedback Marquee */}
+                {feedback.length > 0 && (
+                    <BentoCard title="Student Feedback" icon={<MessageSquare className="text-cyan-400" />} glow>
+                        <div className="relative flex h-[300px] w-full flex-row items-center justify-center overflow-hidden mt-2">
+                            <Marquee pauseOnHover vertical className="[--duration:25s]">
+                                {feedback.slice(0, Math.ceil(feedback.length / 2)).map((fb) => (
+                                    <FeedbackCard key={fb.id} {...fb} />
+                                ))}
+                            </Marquee>
+                            <Marquee reverse pauseOnHover vertical className="[--duration:25s]">
+                                {feedback.slice(Math.ceil(feedback.length / 2)).map((fb) => (
+                                    <FeedbackCard key={fb.id} {...fb} />
+                                ))}
+                            </Marquee>
+                            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-stone-black/80 to-transparent" />
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-stone-black/80 to-transparent" />
+                        </div>
+                    </BentoCard>
+                )}
+
                 {/* Timeline Bento */}
                 <BentoCard className="flex-1" glow>
                     <TeacherTimeline timeline={teacher?.timeline} />
@@ -148,5 +191,37 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
             </div>
 
         </PageTransition>
+    );
+}
+
+function FeedbackCard({ studentName, studentInitials, grade, rating, comment, subject }: {
+    studentName: string;
+    studentInitials: string;
+    grade: number;
+    rating: number;
+    comment: string;
+    subject?: string;
+}) {
+    return (
+        <figure className={cn(
+            "relative h-auto w-44 cursor-pointer overflow-hidden rounded-xl border p-4 transition-colors",
+            "border-white/10 bg-white/5 hover:bg-white/10"
+        )}>
+            <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-[10px] font-mono text-cyan-200 shrink-0">
+                    {studentInitials}
+                </div>
+                <div className="flex flex-col min-w-0">
+                    <figcaption className="text-sm font-medium text-off-white truncate">{studentName}</figcaption>
+                    <p className="text-[10px] text-off-white/40">Grade {grade}{subject ? ` · ${subject}` : ''}</p>
+                </div>
+            </div>
+            <div className="flex gap-0.5 mt-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={cn("w-3 h-3", i < rating ? "text-yellow-400 fill-yellow-400" : "text-white/10")} />
+                ))}
+            </div>
+            <blockquote className="mt-2 text-xs text-off-white/70 leading-relaxed">{comment}</blockquote>
+        </figure>
     );
 }

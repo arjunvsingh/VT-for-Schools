@@ -10,6 +10,25 @@
   --font-serif: var(--font-newsreader);
   --font-newsreader: var(--font-newsreader);
   --font-instrument-sans: var(--font-instrument-sans);
+
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
 }
 
 :root {

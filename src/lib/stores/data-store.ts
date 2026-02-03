@@ -58,6 +58,16 @@ export interface PerformanceIssue {
     status: 'open' | 'resolved';
 }
 
+export interface StudentFeedback {
+    id: string;
+    studentName: string;
+    studentInitials: string;
+    grade: number;
+    comment: string;
+    rating: number; // 1-5
+    subject?: string;
+}
+
 export interface Teacher {
     id: string;
     schoolId: string;
@@ -73,6 +83,7 @@ export interface Teacher {
     awards: string[];
     timeline?: TimelineEvent[];
     performanceIssues?: PerformanceIssue[];
+    studentFeedback?: StudentFeedback[];
 }
 
 // Enriched types for actionable insights
@@ -311,6 +322,13 @@ const mockTeachers: Record<string, Teacher> = {
             { year: '2024-11', title: 'Grant Awarded', text: 'Secured $5k grant for lab equipment.' },
             { year: '2024-09', title: 'Joined District', text: 'Started tenure at Lincoln High School.' },
         ],
+        studentFeedback: [
+            { id: 'fb-t1-1', studentName: 'Emma Wilson', studentInitials: 'EW', grade: 11, rating: 5, subject: 'AP Physics', comment: 'Mrs. Carter makes physics actually exciting. Her lab experiments are the highlight of my week.' },
+            { id: 'fb-t1-2', studentName: 'Liam Patel', studentInitials: 'LP', grade: 10, rating: 5, subject: 'Physics', comment: 'Best teacher I have ever had. She explains complex topics so clearly.' },
+            { id: 'fb-t1-3', studentName: 'Olivia Davis', studentInitials: 'OD', grade: 11, rating: 4, subject: 'AP Physics', comment: 'Class is challenging but Mrs. Carter is always available for extra help after school.' },
+            { id: 'fb-t1-4', studentName: 'Noah Garcia', studentInitials: 'NG', grade: 10, rating: 5, subject: 'Physics', comment: 'She genuinely cares about us understanding the material, not just memorizing.' },
+            { id: 'fb-t1-5', studentName: 'Ava Martinez', studentInitials: 'AM', grade: 11, rating: 5, subject: 'AP Physics', comment: 'I went from hating science to considering it as a major because of this class.' },
+        ],
     },
     't2': {
         id: 't2',
@@ -335,6 +353,12 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'pi-t2-1', type: 'Parent Feedback', description: 'Multiple reports of grading inconsistencies and lack of feedback.', severity: 'medium', date: '2026-01-15', status: 'open' },
             { id: 'pi-t2-2', type: 'Classroom Management', description: 'Observation revealed difficulty maintaining order in 3rd period.', severity: 'medium', date: '2025-11-20', status: 'open' },
         ],
+        studentFeedback: [
+            { id: 'fb-t2-1', studentName: 'Alex Kim', studentInitials: 'AK', grade: 10, rating: 2, subject: 'Algebra II', comment: 'Hard to follow the lessons. Feels like he rushes through everything.' },
+            { id: 'fb-t2-2', studentName: 'Sophia Lee', studentInitials: 'SL', grade: 10, rating: 3, subject: 'Algebra I', comment: 'Mr. Doe knows the material but could be better at explaining it step by step.' },
+            { id: 'fb-t2-3', studentName: 'Mason Clark', studentInitials: 'MC', grade: 9, rating: 2, subject: 'Algebra I', comment: 'The class is too fast-paced and I feel lost most of the time.' },
+            { id: 'fb-t2-4', studentName: 'Isabella Torres', studentInitials: 'IT', grade: 10, rating: 3, subject: 'Algebra II', comment: 'Some days are good, but grading feels inconsistent and unclear.' },
+        ],
     },
     't3': {
         id: 't3',
@@ -354,6 +378,14 @@ const mockTeachers: Record<string, Teacher> = {
             { year: '2024-08', title: 'Dept Head', text: 'Promoted to English Department Head.' },
             { year: '2018-09', title: 'Joined District', text: 'Begun teaching at Roosevelt Elementary.' },
         ],
+        studentFeedback: [
+            { id: 'fb-t3-1', studentName: 'Chloe Nguyen', studentInitials: 'CN', grade: 8, rating: 5, subject: 'English', comment: 'Ms. Lopez made me love reading. Her book recommendations changed my life.' },
+            { id: 'fb-t3-2', studentName: 'Ethan Brooks', studentInitials: 'EB', grade: 7, rating: 4, subject: 'English', comment: 'She pushes us to think critically about what we read, not just summarize.' },
+            { id: 'fb-t3-3', studentName: 'Mia Johnson', studentInitials: 'MJ', grade: 8, rating: 5, subject: 'Creative Writing', comment: 'The creative writing workshop she runs is incredible. I feel like a real writer.' },
+            { id: 'fb-t3-4', studentName: 'James Wright', studentInitials: 'JW', grade: 7, rating: 4, subject: 'English', comment: 'Fair grader and always gives detailed feedback on essays.' },
+            { id: 'fb-t3-5', studentName: 'Zoe Campbell', studentInitials: 'ZC', grade: 8, rating: 5, subject: 'English', comment: 'Ms. Lopez is the reason I want to study journalism in college.' },
+            { id: 'fb-t3-6', studentName: 'Daniel Rivera', studentInitials: 'DR', grade: 7, rating: 4, subject: 'English', comment: 'Class discussions are always engaging. She makes everyone feel heard.' },
+        ],
     },
     't4': {
         id: 't4',
@@ -371,6 +403,12 @@ const mockTeachers: Record<string, Teacher> = {
         timeline: [
             { year: '2025-09', title: 'Club Advisor', text: 'Started the new Debate Club.' },
             { year: '2021-08', title: 'Hired', text: 'Joined as History Teacher.' },
+        ],
+        studentFeedback: [
+            { id: 'fb-t4-1', studentName: 'Ryan Mitchell', studentInitials: 'RM', grade: 11, rating: 4, subject: 'US History', comment: 'Mr. Kim makes history feel relevant to today. His debate sessions are great.' },
+            { id: 'fb-t4-2', studentName: 'Hannah Scott', studentInitials: 'HS', grade: 10, rating: 4, subject: 'World History', comment: 'I actually look forward to history class. He tells stories, not just facts.' },
+            { id: 'fb-t4-3', studentName: 'Tyler Adams', studentInitials: 'TA', grade: 11, rating: 5, subject: 'US History', comment: 'The Debate Club he started is the best thing that happened to our school.' },
+            { id: 'fb-t4-4', studentName: 'Lily Chen', studentInitials: 'LC', grade: 10, rating: 4, subject: 'World History', comment: 'Good teacher overall. Sometimes the workload is heavy but I learn a lot.' },
         ],
     },
     't5': {
@@ -390,6 +428,13 @@ const mockTeachers: Record<string, Teacher> = {
             { year: '2023-04', title: 'National Award', text: 'Received National Education Excellence Award.' },
             { year: '2020-08', title: 'Curriculum Lead', text: 'Appointed district-wide math curriculum lead.' },
             { year: '2016-09', title: 'Joined', text: 'Started at Washington Middle.' },
+        ],
+        studentFeedback: [
+            { id: 'fb-t5-1', studentName: 'Sophie Anderson', studentInitials: 'SA', grade: 8, rating: 5, subject: 'Pre-Algebra', comment: 'Mrs. Chen made me realize I can actually be good at math. She never gives up on you.' },
+            { id: 'fb-t5-2', studentName: 'Lucas Hernandez', studentInitials: 'LH', grade: 7, rating: 5, subject: 'Math 7', comment: 'She explains things in so many different ways until everyone gets it.' },
+            { id: 'fb-t5-3', studentName: 'Grace Taylor', studentInitials: 'GT', grade: 8, rating: 4, subject: 'Pre-Algebra', comment: 'Challenging class but the extra practice sessions she offers really help.' },
+            { id: 'fb-t5-4', studentName: 'Benjamin Flores', studentInitials: 'BF', grade: 7, rating: 5, subject: 'Math 7', comment: 'Best math teacher in the district. Her review games before tests are legendary.' },
+            { id: 'fb-t5-5', studentName: 'Aria Thompson', studentInitials: 'AT', grade: 8, rating: 5, subject: 'Pre-Algebra', comment: 'I went from a C to an A this year all because of how Mrs. Chen teaches.' },
         ],
     },
     't6': {
@@ -413,6 +458,11 @@ const mockTeachers: Record<string, Teacher> = {
         performanceIssues: [
             { id: 'pi-t6-1', type: 'Curriculum Alignment', description: 'Teaching material not aligned with district standards for Biology.', severity: 'high', date: '2026-01-10', status: 'open' },
             { id: 'pi-t6-2', type: 'Professional Development', description: 'Missed mandatory safety training session.', severity: 'medium', date: '2025-10-15', status: 'resolved' },
+        ],
+        studentFeedback: [
+            { id: 'fb-t6-1', studentName: 'Jack Robinson', studentInitials: 'JR', grade: 7, rating: 2, subject: 'Biology', comment: 'The labs feel disorganized and I never know what we are supposed to be doing.' },
+            { id: 'fb-t6-2', studentName: 'Samantha White', studentInitials: 'SW', grade: 8, rating: 3, subject: 'Biology', comment: 'Mr. Brown is nice but the class feels unstructured compared to my other classes.' },
+            { id: 'fb-t6-3', studentName: 'David Park', studentInitials: 'DP', grade: 7, rating: 2, subject: 'Biology', comment: 'I wish we had more hands-on experiments instead of just reading from the textbook.' },
         ],
     },
 };

@@ -9,6 +9,7 @@ import { CommandBar } from "@/components/ui/CommandBar";
 import { CompareDrawer, CompareIndicator } from "@/components/ui/CompareDrawer";
 import { NotesPanel } from "@/components/ui/NotesPanel";
 import { TransitionOverlay } from "@/components/layout/TransitionOverlay";
+import { PageBackground } from "@/components/backgrounds/PageBackground";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
       >
         <SmoothScroll>
           <NoiseOverlay />
+          <PageBackground />
           <TopBar />
           {children}
           <ToastProvider />

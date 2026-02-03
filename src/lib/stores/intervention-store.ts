@@ -14,7 +14,8 @@ export type InterventionType =
     | 'schedule_tutoring'
     | 'enroll_hdt'
     | 'parent_outreach'
-    | 'send_accolades';
+    | 'send_accolades'
+    | 'schedule_call';
 
 export type InterventionStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -90,6 +91,11 @@ export const interventionLabels: Record<InterventionType, { label: string; icon:
         label: 'Send Accolades',
         icon: '🏆',
         description: 'Send official recognition for achievement',
+    },
+    schedule_call: {
+        label: 'Schedule Call',
+        icon: '📞',
+        description: 'Schedule a phone call',
     },
 };
 

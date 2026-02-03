@@ -106,6 +106,49 @@ This request is based on recent performance data and aims to provide proactive s
 Please review and authorize the bridge support resources.`,
             };
 
+        case 'send_email': {
+            const subjectNote = ctx.subject ? " in " + ctx.subject : "";
+            const issueNote = ctx.issue
+                ? "Specifically, I would like to discuss " + ctx.issue + "."
+                : "I would like to touch base on a few items.";
+            return {
+                subject: `Message for ${ctx.entityName}`,
+                body: `Dear ${ctx.entityName},
+
+I hope this message finds you well. I wanted to reach out regarding your work${subjectNote}.
+
+${issueNote}
+
+Please let me know if you have any questions or if there is anything you need from the administration.
+
+Best regards,
+Dr. Sarah Chen
+District Administrator`,
+            };
+        }
+
+        case 'schedule_call': {
+            const topic = ctx.issue ? "Topic: " + ctx.issue : "Topic: General check-in";
+            const contextLine = ctx.riskFactor ? "Context: " + ctx.riskFactor + "\n\n" : "";
+            return {
+                subject: `Call Request — ${ctx.entityName}`,
+                body: `Phone Call Request
+
+Participant: ${ctx.entityName}
+${topic}
+Urgency: Routine
+
+Preferred Times:
+- Morning (9:00 AM - 11:00 AM)
+- Afternoon (1:00 PM - 3:00 PM)
+
+${contextLine}Please confirm your availability and we will send a calendar invitation.
+
+Dr. Sarah Chen
+District Administrator`,
+            };
+        }
+
         default:
             return {
                 subject: `${interventionLabels[type]?.label ?? 'Action'} — ${ctx.entityName}`,
@@ -274,4 +317,6 @@ export const MODAL_ACTION_TYPES: InterventionType[] = [
     'send_accolades',
     'enroll_hdt',
     'request_bridge',
+    'send_email',
+    'schedule_call',
 ];
