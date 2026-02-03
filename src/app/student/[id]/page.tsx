@@ -4,8 +4,9 @@ import { BentoCard } from '@/components/ui/BentoCard';
 import { BackLink } from '@/components/navigation';
 import { NotesButton } from '@/components/ui/NotesPanel';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { Book, AlertCircle, CheckCircle } from 'lucide-react';
+import { Book, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
+import { PerformanceHistory } from '@/components/ui/PerformanceHistory';
 
 export default function StudentPage({ params }: { params: { id: string } }) {
     const student = useDataStore((state) => state.getStudent(params.id));
@@ -23,6 +24,7 @@ export default function StudentPage({ params }: { params: { id: string } }) {
     // New enriched data
     const riskFactors = student?.riskFactors ?? [];
     const areasOfFocus = student?.areasOfFocus ?? [];
+    const performanceHistory = student?.performanceHistory ?? [];
 
     return (
         <PageTransition className="p-4 md:p-8 pt-24 min-h-screen max-w-5xl mx-auto flex flex-col gap-6">
@@ -176,6 +178,22 @@ export default function StudentPage({ params }: { params: { id: string } }) {
                 </div>
 
             </div>
+
+            {/* Academic Journey Timeline */}
+            {performanceHistory.length > 0 && (
+                <BentoCard title="Academic Journey" icon={<TrendingUp className="text-acid-lime" />} glow>
+                    <div className="mt-3">
+                        <PerformanceHistory
+                            data={performanceHistory}
+                            primaryLabel="GPA"
+                            secondaryLabel="Attendance"
+                            height={220}
+                            domainMin={0}
+                            domainMax={5}
+                        />
+                    </div>
+                </BentoCard>
+            )}
         </PageTransition>
     );
 }

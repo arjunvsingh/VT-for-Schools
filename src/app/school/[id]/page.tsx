@@ -241,7 +241,7 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
                     className="col-span-1"
                     glow
                 >
-                    <ProjectionGraph schoolId={params.id} />
+                    <ProjectionGraph schoolId={params.id} performanceHistory={school?.performanceHistory} />
                 </BentoCard>
 
                 <BentoCard

@@ -2,9 +2,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import type { PerformanceSnapshot } from '@/lib/stores/data-store';
 
 interface ProjectionGraphProps {
     schoolId?: string;
+    performanceHistory?: PerformanceSnapshot[];
 }
 
 // Generate school-specific data based on ID
@@ -48,14 +50,26 @@ function getTrend(data: ReturnType<typeof generateSchoolData>) {
     return 'stable';
 }
 
-export default function ProjectionGraph({ schoolId = 's1' }: ProjectionGraphProps) {
+export default function ProjectionGraph({ schoolId = 's1', performanceHistory }: ProjectionGraphProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const data = useMemo(() => generateSchoolData(schoolId), [schoolId]);
+    const data = useMemo(() => {
+        if (performanceHistory && performanceHistory.length > 0) {
+            // Use real store data: map PerformanceSnapshot to chart format
+            const target = Math.round(performanceHistory[0].value + 10);
+            return performanceHistory.map((snap, i) => ({
+                month: snap.month,
+                actual: snap.value,
+                projected: Math.round(snap.value + (performanceHistory.length - i) * 0.5),
+                target,
+            }));
+        }
+        return generateSchoolData(schoolId);
+    }, [schoolId, performanceHistory]);
     const trend = useMemo(() => getTrend(data), [data]);
 
     // Calculate key metrics

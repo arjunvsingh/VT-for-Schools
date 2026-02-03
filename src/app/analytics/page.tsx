@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { KPIStrip } from '@/components/ui/KPIStrip';
@@ -14,7 +14,7 @@ import type { Student, SubjectMastery } from '@/lib/stores';
 import { useTransitionNavigate } from '@/components/layout/TransitionOverlay';
 import {
     Users, AlertTriangle, TrendingUp, GraduationCap,
-    BarChart3, BookOpen, Target, Activity, Brain, ArrowRight
+    BarChart3, BookOpen, Target, Activity, Brain, ArrowRight, X
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -36,6 +36,11 @@ export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState('last30');
     const [filterSchool, setFilterSchool] = useState('all');
     const [filterGrade, setFilterGrade] = useState('all');
+    const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+
+    const selectedSubjectData = selectedSubject
+        ? subjectMastery.find(s => s.subject === selectedSubject)
+        : null;
 
     const schoolOptions = useMemo(() => [
         { value: 'all', label: 'All Schools' },
@@ -392,14 +397,25 @@ export default function AnalyticsPage() {
                 {/* Subject Mastery Bar Chart */}
                 <BentoCard
                     title="Subject Mastery Breakdown"
-                    description="Average mastery by skill area"
+                    description="Click a bar to drill into sub-skills"
                     icon={<BarChart3 className="text-cyan-400" />}
                     className="min-h-[350px]"
                     glow
                 >
                     <div className="mt-4 h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={subjectMastery} margin={{ top: 5, right: 10, left: -20, bottom: 40 }}>
+                            <BarChart
+                                data={subjectMastery}
+                                margin={{ top: 5, right: 10, left: -20, bottom: 40 }}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                onClick={(state: any) => {
+                                    if (state?.activePayload?.[0]) {
+                                        const subject = (state.activePayload[0].payload as SubjectMastery).subject;
+                                        setSelectedSubject(prev => prev === subject ? null : subject);
+                                    }
+                                }}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                 <XAxis
                                     dataKey="subject"
@@ -424,13 +440,20 @@ export default function AnalyticsPage() {
                                                     {data.mastery}% mastery
                                                 </p>
                                                 <p className="text-off-white/40">{data.studentCount} students</p>
+                                                {data.skills && <p className="text-off-white/30 mt-1">Click to see {data.skills.length} sub-skills</p>}
                                             </div>
                                         );
                                     }}
                                 />
                                 <Bar dataKey="mastery" radius={[4, 4, 0, 0]}>
                                     {subjectMastery.map((entry, i) => (
-                                        <Cell key={i} fill={getMasteryColor(entry.mastery)} fillOpacity={0.8} />
+                                        <Cell
+                                            key={i}
+                                            fill={getMasteryColor(entry.mastery)}
+                                            fillOpacity={selectedSubject && selectedSubject !== entry.subject ? 0.3 : 0.8}
+                                            stroke={selectedSubject === entry.subject ? '#E7E5E4' : 'none'}
+                                            strokeWidth={selectedSubject === entry.subject ? 2 : 0}
+                                        />
                                     ))}
                                 </Bar>
                             </BarChart>
@@ -442,6 +465,63 @@ export default function AnalyticsPage() {
                         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-orange-400/80" /> 55-69%</div>
                         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-400/80" /> &lt;55%</div>
                     </div>
+
+                    {/* Skill Drill-Down Panel */}
+                    <AnimatePresence>
+                        {selectedSubjectData?.skills && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="overflow-hidden"
+                            >
+                                <div className="mt-4 pt-4 border-t border-white/10">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="text-sm font-bold text-off-white">{selectedSubjectData.subject}</h4>
+                                            <span className="text-[10px] text-off-white/30 bg-white/5 px-1.5 py-0.5 rounded">{selectedSubjectData.category}</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setSelectedSubject(null)}
+                                            className="p-1 rounded-full hover:bg-white/10 transition-colors text-off-white/40 hover:text-off-white"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-col gap-2.5">
+                                        {selectedSubjectData.skills.map((skill, i) => (
+                                            <motion.div
+                                                key={skill.name}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                className="flex items-center gap-3"
+                                            >
+                                                <span className="text-xs text-off-white/70 w-40 shrink-0 truncate">{skill.name}</span>
+                                                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${skill.mastery}%` }}
+                                                        transition={{ duration: 0.5, delay: i * 0.05 }}
+                                                        className="h-full rounded-full"
+                                                        style={{ backgroundColor: getMasteryColor(skill.mastery) }}
+                                                    />
+                                                </div>
+                                                <span className="text-xs font-mono font-bold w-10 text-right" style={{ color: getMasteryColor(skill.mastery) }}>
+                                                    {skill.mastery}%
+                                                </span>
+                                                <TrendBadge value={skill.trend} />
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                    <p className="text-[10px] text-off-white/20 mt-3 text-right">
+                                        {selectedSubjectData.studentCount} students enrolled
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </BentoCard>
             </div>
 

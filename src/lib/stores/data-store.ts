@@ -40,6 +40,7 @@ export interface School {
     status: 'good' | 'warning' | 'alert';
     goals?: SchoolGoals;
     aiSummary?: SchoolAISummary;
+    performanceHistory?: PerformanceSnapshot[];
 }
 
 // Teacher specific types
@@ -84,6 +85,7 @@ export interface Teacher {
     timeline?: TimelineEvent[];
     performanceIssues?: PerformanceIssue[];
     studentFeedback?: StudentFeedback[];
+    performanceHistory?: PerformanceSnapshot[];
 }
 
 // Enriched types for actionable insights
@@ -111,6 +113,20 @@ export interface RiskFactor {
     actionType: 'schedule_tutoring' | 'parent_outreach' | 'enroll_hdt';
 }
 
+export interface PerformanceSnapshot {
+    month: string;
+    value: number;        // Primary: GPA (students), rating (teachers), performance % (schools)
+    secondary?: number;   // Attendance %
+    event?: string;       // Intervention/milestone marker text
+}
+
+export interface SkillBreakdown {
+    name: string;
+    mastery: number;
+    trend: number;
+    studentCount: number;
+}
+
 export interface Student {
     id: string;
     schoolId: string;
@@ -124,6 +140,7 @@ export interface Student {
     riskScore?: number; // 0-100, higher = more at risk
     riskFactors?: RiskFactor[];
     areasOfFocus?: AreaOfFocus[];
+    performanceHistory?: PerformanceSnapshot[];
 }
 
 export interface Insight {
@@ -138,6 +155,29 @@ export interface Insight {
     impactMetric?: string;
     rootCause?: string;
     priority?: 'high' | 'medium' | 'low';
+}
+
+// ============== Performance History Helpers ==============
+
+const MONTHS_8 = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'];
+
+function genPerfHistory(
+    base: number,
+    growth: number,
+    volatility: number,
+    seed: number,
+    secondaryBase?: number,
+    events?: Record<number, string>,
+): PerformanceSnapshot[] {
+    return MONTHS_8.map((month, i) => {
+        const noise = Math.sin(seed + i * 1.7) * volatility;
+        const value = parseFloat((base + i * growth + noise).toFixed(1));
+        const secondary = secondaryBase
+            ? Math.round(secondaryBase + i * (growth > 0 ? 0.3 : -0.2) + Math.cos(seed + i) * 1.5)
+            : undefined;
+        const event = events?.[i];
+        return { month, value, ...(secondary !== undefined && { secondary }), ...(event && { event }) };
+    });
 }
 
 // ============== Mock Data ==============
@@ -190,6 +230,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Schedule math dept review', 'Enroll struggling students in HDT program'],
         },
+        performanceHistory: genPerfHistory(89, 0.4, 1.2, 11, 93),
     },
     's2': {
         id: 's2',
@@ -218,6 +259,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Enroll Michael Brown\'s students in HDT', 'Contact principal immediately', 'Deploy HDT attendance cohort'],
         },
+        performanceHistory: genPerfHistory(78, -0.8, 2, 22, 88, { 3: 'Principal meeting', 6: 'HDT pilot launched' }),
     },
     's3': {
         id: 's3',
@@ -245,6 +287,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Review for potential excellence program'],
         },
+        performanceHistory: genPerfHistory(85, 0.3, 1, 33, 90),
     },
     's4': {
         id: 's4',
@@ -272,6 +315,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Document best practices', 'Share methodology with struggling schools'],
         },
+        performanceHistory: genPerfHistory(93, 0.2, 0.8, 44, 95),
     },
     's5': {
         id: 's5',
@@ -299,6 +343,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Prioritize hiring', 'Request substitute support', 'Expand HDT sessions for coverage'],
         },
+        performanceHistory: genPerfHistory(84, -0.4, 1.5, 55, 91, { 4: 'Staff shortage began', 6: 'Substitute hired' }),
     },
     's6': {
         id: 's6',
@@ -327,6 +372,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Review math curriculum pacing with Derek Pham', 'Expand peer tutoring pilot to math department'],
         },
+        performanceHistory: genPerfHistory(88, 0.3, 1, 66, 92),
     },
     's7': {
         id: 's7',
@@ -355,6 +401,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Investigate Grade 7 attendance dip', 'Increase HDT enrollment for math cohort'],
         },
+        performanceHistory: genPerfHistory(82, 0.2, 1.2, 77, 89),
     },
     's8': {
         id: 's8',
@@ -384,6 +431,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Emergency staffing request for math support', 'Launch in-school tutoring during lunch periods', 'Connect families with district transportation services'],
         },
+        performanceHistory: genPerfHistory(74, -0.7, 2, 88, 85, { 2: 'Emergency review', 5: 'New math aide hired' }),
     },
     's9': {
         id: 's9',
@@ -412,6 +460,7 @@ const mockSchools: Record<string, School> = {
             ],
             suggestedActions: ['Nominate for district excellence recognition', 'Share STEM program methodology with other schools'],
         },
+        performanceHistory: genPerfHistory(82, 0.6, 1.3, 99, 90, { 2: 'New STEM program', 5: 'HDT integration' }),
     },
 };
 
@@ -442,6 +491,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t1-4', studentName: 'Noah Garcia', studentInitials: 'NG', grade: 10, rating: 5, subject: 'Physics', comment: 'She genuinely cares about us understanding the material, not just memorizing.' },
             { id: 'fb-t1-5', studentName: 'Ava Martinez', studentInitials: 'AM', grade: 11, rating: 5, subject: 'AP Physics', comment: 'I went from hating science to considering it as a major because of this class.' },
         ],
+        performanceHistory: genPerfHistory(4.6, 0.04, 0.1, 101),
     },
     't2': {
         id: 't2',
@@ -472,6 +522,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t2-3', studentName: 'Mason Clark', studentInitials: 'MC', grade: 9, rating: 2, subject: 'Algebra I', comment: 'The class is too fast-paced and I feel lost most of the time.' },
             { id: 'fb-t2-4', studentName: 'Isabella Torres', studentInitials: 'IT', grade: 10, rating: 3, subject: 'Algebra II', comment: 'Some days are good, but grading feels inconsistent and unclear.' },
         ],
+        performanceHistory: genPerfHistory(3.8, -0.08, 0.15, 102, undefined, { 5: 'Performance review' }),
     },
     't3': {
         id: 't3',
@@ -499,6 +550,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t3-5', studentName: 'Zoe Campbell', studentInitials: 'ZC', grade: 8, rating: 5, subject: 'English', comment: 'Ms. Lopez is the reason I want to study journalism in college.' },
             { id: 'fb-t3-6', studentName: 'Daniel Rivera', studentInitials: 'DR', grade: 7, rating: 4, subject: 'English', comment: 'Class discussions are always engaging. She makes everyone feel heard.' },
         ],
+        performanceHistory: genPerfHistory(4.0, 0.03, 0.1, 103),
     },
     't4': {
         id: 't4',
@@ -523,6 +575,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t4-3', studentName: 'Tyler Adams', studentInitials: 'TA', grade: 11, rating: 5, subject: 'US History', comment: 'The Debate Club he started is the best thing that happened to our school.' },
             { id: 'fb-t4-4', studentName: 'Lily Chen', studentInitials: 'LC', grade: 10, rating: 4, subject: 'World History', comment: 'Good teacher overall. Sometimes the workload is heavy but I learn a lot.' },
         ],
+        performanceHistory: genPerfHistory(3.9, 0.03, 0.08, 104),
     },
     't5': {
         id: 't5',
@@ -549,6 +602,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t5-4', studentName: 'Benjamin Flores', studentInitials: 'BF', grade: 7, rating: 5, subject: 'Math 7', comment: 'Best math teacher in the district. Her review games before tests are legendary.' },
             { id: 'fb-t5-5', studentName: 'Aria Thompson', studentInitials: 'AT', grade: 8, rating: 5, subject: 'Pre-Algebra', comment: 'I went from a C to an A this year all because of how Mrs. Chen teaches.' },
         ],
+        performanceHistory: genPerfHistory(4.5, 0.03, 0.08, 105),
     },
     't6': {
         id: 't6',
@@ -577,6 +631,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t6-2', studentName: 'Samantha White', studentInitials: 'SW', grade: 8, rating: 3, subject: 'Biology', comment: 'Mr. Brown is nice but the class feels unstructured compared to my other classes.' },
             { id: 'fb-t6-3', studentName: 'David Park', studentInitials: 'DP', grade: 7, rating: 2, subject: 'Biology', comment: 'I wish we had more hands-on experiments instead of just reading from the textbook.' },
         ],
+        performanceHistory: genPerfHistory(3.2, -0.06, 0.2, 106, undefined, { 3: 'Missed training', 6: 'Performance plan' }),
     },
     't7': {
         id: 't7',
@@ -603,6 +658,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t7-3', studentName: 'Priya Sharma', studentInitials: 'PS', grade: 11, rating: 4, subject: 'AP English', comment: 'Challenging workload but fair. She pushes you to be a better writer.' },
             { id: 'fb-t7-4', studentName: 'Diego Morales', studentInitials: 'DM', grade: 10, rating: 5, subject: 'English', comment: 'First teacher who made Shakespeare feel relevant. Her teaching style is engaging.' },
         ],
+        performanceHistory: genPerfHistory(4.4, 0.03, 0.08, 107),
     },
     't8': {
         id: 't8',
@@ -633,6 +689,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t8-3', studentName: 'Ethan Cho', studentInitials: 'EC', grade: 11, rating: 2, subject: 'Algebra II', comment: 'I had an A in math last year and now I have a C. Something is wrong with the pacing.' },
             { id: 'fb-t8-4', studentName: 'Mia Santos', studentInitials: 'MS', grade: 10, rating: 3, subject: 'Geometry', comment: 'Nice teacher but I need more practice problems before tests. We never do enough examples.' },
         ],
+        performanceHistory: genPerfHistory(3.5, -0.08, 0.15, 108, undefined, { 4: 'Load increased', 6: 'Pacing concerns raised' }),
     },
     't9': {
         id: 't9',
@@ -659,6 +716,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t9-3', studentName: 'Omar Hassan', studentInitials: 'OH', grade: 8, rating: 5, subject: 'Earth Science', comment: 'Ms. Nakamura connects everything to real life. I actually understand why science matters now.' },
             { id: 'fb-t9-4', studentName: 'Sofia Petrov', studentInitials: 'SP', grade: 7, rating: 4, subject: 'Life Science', comment: 'She is patient and explains things well. I am not a science person but I like this class.' },
         ],
+        performanceHistory: genPerfHistory(4.2, 0.03, 0.1, 109),
     },
     't10': {
         id: 't10',
@@ -683,6 +741,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t10-2', studentName: 'Marcus Reed', studentInitials: 'MR', grade: 11, rating: 4, subject: 'US History', comment: 'He is passionate about what he teaches. You can tell he genuinely loves history.' },
             { id: 'fb-t10-3', studentName: 'Elena Vasquez', studentInitials: 'EV', grade: 12, rating: 5, subject: 'AP Government', comment: 'Best teacher at Jefferson. Mock Trial with him was the highlight of my high school career.' },
         ],
+        performanceHistory: genPerfHistory(4.1, 0.03, 0.08, 110),
     },
     't11': {
         id: 't11',
@@ -712,6 +771,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t11-2', studentName: 'Kevin Huang', studentInitials: 'KH', grade: 4, rating: 3, subject: 'Math', comment: 'I like math but I wish we got our homework back faster so I know what I did wrong.' },
             { id: 'fb-t11-3', studentName: 'Jasmine Walker', studentInitials: 'JW', grade: 5, rating: 4, subject: 'Math', comment: 'She tries really hard but there are too many kids and it gets loud. Hard to focus.' },
         ],
+        performanceHistory: genPerfHistory(3.8, -0.1, 0.15, 111, undefined, { 3: 'Class size increase', 6: 'Aide requested' }),
     },
     't12': {
         id: 't12',
@@ -736,6 +796,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t12-2', studentName: 'Leo Kim', studentInitials: 'LK', grade: 4, rating: 4, subject: 'English', comment: 'He helps me sound out hard words without making me feel dumb.' },
             { id: 'fb-t12-3', studentName: 'Maya Okafor', studentInitials: 'MO', grade: 3, rating: 5, subject: 'Reading', comment: 'Best teacher! He always picks books I actually want to read.' },
         ],
+        performanceHistory: genPerfHistory(3.5, 0.04, 0.1, 112),
     },
     't13': {
         id: 't13',
@@ -762,6 +823,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t13-3', studentName: 'Jason Park', studentInitials: 'JP', grade: 12, rating: 4, subject: 'AP Chemistry', comment: 'Demanding but worth it. I feel prepared for college-level science because of this class.' },
             { id: 'fb-t13-4', studentName: 'Isabelle Torres', studentInitials: 'IT', grade: 11, rating: 5, subject: 'Chemistry', comment: 'She stays after school to help anyone who needs it. Best science teacher I have ever had.' },
         ],
+        performanceHistory: genPerfHistory(4.2, 0.04, 0.08, 113),
     },
     't14': {
         id: 't14',
@@ -792,6 +854,7 @@ const mockTeachers: Record<string, Teacher> = {
             { id: 'fb-t14-3', studentName: 'Fatima Al-Hassan', studentInitials: 'FA', grade: 5, rating: 2, subject: 'Math', comment: 'When I ask for help he just says try harder. I need someone to actually show me how.' },
             { id: 'fb-t14-4', studentName: 'Isaiah Williams', studentInitials: 'IW', grade: 4, rating: 3, subject: 'Math', comment: 'Some weeks are okay but most of the time I feel lost. My mom wants to move me to another class.' },
         ],
+        performanceHistory: genPerfHistory(3.0, -0.06, 0.2, 114, undefined, { 4: 'Low observation score', 6: 'Mentorship started' }),
     },
 };
 
@@ -1697,6 +1760,43 @@ const mockStudents: Record<string, Student> = {
     },
 };
 
+// Augment students with performance history trajectories
+const studentPerfConfigs: Record<string, [number, number, number, number, number?, Record<number, string>?]> = {
+    // [base, growth, volatility, seed, secondaryBase?, events?]
+    // Excelling students — steady upward GPA
+    'st1':  [3.5, 0.04, 0.08, 201, 95],
+    'st5':  [3.6, 0.04, 0.06, 205, 96],
+    'st12': [3.7, 0.04, 0.05, 212, 97],
+    'st13': [3.4, 0.04, 0.08, 213, 94],
+    'st14': [3.6, 0.04, 0.06, 214, 96],
+    'st15': [3.3, 0.04, 0.07, 215, 95],
+    // On-track students — stable GPA
+    'st3':  [3.0, 0.02, 0.1, 203, 91],
+    'st6':  [2.5, 0.03, 0.1, 206, 88],
+    'st16': [2.9, 0.02, 0.08, 216, 90],
+    'st17': [2.7, 0.03, 0.1, 217, 89],
+    'st18': [2.6, 0.02, 0.08, 218, 91],
+    'st19': [3.1, 0.02, 0.08, 219, 92],
+    // At-risk students — declining GPA with intervention events
+    'st2':  [3.0, -0.12, 0.15, 202, 85, { 4: 'HDT enrollment', 6: 'Parent conference' }],
+    'st4':  [2.8, -0.12, 0.2, 204, 82, { 3: 'Counselor referral', 5: 'HDT started', 7: 'Tutoring adjusted' }],
+    'st7':  [2.6, -0.12, 0.18, 207, 78, { 4: 'Bridge requested', 6: 'HDT enrollment' }],
+    'st8':  [3.1, -0.1, 0.15, 208, 86, { 5: 'Parent outreach', 7: 'Schedule adjusted' }],
+    'st9':  [3.0, -0.08, 0.12, 209, 84, { 4: 'Attendance plan', 6: 'HDT started' }],
+    'st10': [2.8, -0.1, 0.18, 210, 80, { 3: 'Math intervention', 5: 'Reading support added' }],
+    'st11': [3.0, -0.1, 0.15, 211, 82, { 4: 'Teacher conference', 6: 'Course change' }],
+    'st20': [2.5, -0.09, 0.2, 220, 76, { 3: 'HDT referral', 5: 'Parent meeting', 7: 'Showing improvement' }],
+    'st21': [2.7, -0.1, 0.18, 221, 79, { 4: 'Attendance warning', 6: 'Counselor meeting' }],
+    'st22': [2.4, -0.1, 0.2, 222, 74, { 3: 'Emergency review', 5: 'HDT + parent outreach' }],
+    'st23': [2.9, -0.1, 0.15, 223, 81, { 4: 'Math lab assigned', 6: 'Progress check' }],
+    'st24': [2.6, -0.08, 0.2, 224, 77, { 3: 'Section transfer requested', 5: 'HDT with manipulatives' }],
+};
+for (const [id, [base, growth, vol, seed, sec, events]] of Object.entries(studentPerfConfigs)) {
+    if (mockStudents[id]) {
+        mockStudents[id].performanceHistory = genPerfHistory(base, growth, vol, seed, sec, events);
+    }
+}
+
 const mockInsights: Insight[] = [
     {
         id: 'i1',
@@ -1863,6 +1963,7 @@ export interface SubjectMastery {
     trend: number; // % change
     studentCount: number;
     category: string;
+    skills?: SkillBreakdown[];
 }
 
 export interface DistrictMetrics {
@@ -1896,21 +1997,96 @@ const mockTrendData: TrendDataPoint[] = [
 ];
 
 const mockSubjectMastery: SubjectMastery[] = [
-    { subject: 'Reading Comprehension', mastery: 88, trend: 3.2, studentCount: 680, category: 'Literacy' },
-    { subject: 'Linear Equations', mastery: 72, trend: -2.1, studentCount: 540, category: 'Algebra' },
-    { subject: 'Scientific Method', mastery: 81, trend: 1.5, studentCount: 420, category: 'Science' },
-    { subject: 'Essay Writing', mastery: 85, trend: 4.0, studentCount: 610, category: 'Literacy' },
-    { subject: 'Geometry Proofs', mastery: 64, trend: -5.3, studentCount: 320, category: 'Math' },
-    { subject: 'US History', mastery: 79, trend: 0.8, studentCount: 480, category: 'Social Studies' },
-    { subject: 'Photosynthesis', mastery: 76, trend: 2.3, studentCount: 380, category: 'Biology' },
-    { subject: 'Quadratic Equations', mastery: 58, trend: -4.7, studentCount: 290, category: 'Algebra' },
-    { subject: 'Spanish Vocab', mastery: 91, trend: 1.1, studentCount: 260, category: 'Language' },
-    { subject: 'Data Analysis', mastery: 70, trend: -1.8, studentCount: 350, category: 'Math' },
-    { subject: 'Chemistry Concepts', mastery: 77, trend: 2.8, studentCount: 310, category: 'Science' },
-    { subject: 'Fraction Operations', mastery: 62, trend: -3.1, studentCount: 440, category: 'Math' },
-    { subject: 'Literary Analysis', mastery: 83, trend: 2.5, studentCount: 520, category: 'Literacy' },
-    { subject: 'World Geography', mastery: 80, trend: 0.4, studentCount: 390, category: 'Social Studies' },
-    { subject: 'Coding & Logic', mastery: 74, trend: 5.2, studentCount: 180, category: 'STEM' },
+    { subject: 'Reading Comprehension', mastery: 88, trend: 3.2, studentCount: 680, category: 'Literacy', skills: [
+        { name: 'Main Idea Identification', mastery: 92, trend: 2.1, studentCount: 680 },
+        { name: 'Inference & Context Clues', mastery: 85, trend: 4.5, studentCount: 650 },
+        { name: 'Vocabulary in Context', mastery: 90, trend: 1.8, studentCount: 670 },
+        { name: 'Text Structure Analysis', mastery: 84, trend: 3.8, studentCount: 640 },
+    ]},
+    { subject: 'Linear Equations', mastery: 72, trend: -2.1, studentCount: 540, category: 'Algebra', skills: [
+        { name: 'Solving One-Step', mastery: 88, trend: 0.5, studentCount: 540 },
+        { name: 'Solving Multi-Step', mastery: 71, trend: -3.2, studentCount: 520 },
+        { name: 'Word Problems', mastery: 62, trend: -4.1, studentCount: 510 },
+        { name: 'Graphing Linear Functions', mastery: 68, trend: -1.5, studentCount: 500 },
+    ]},
+    { subject: 'Scientific Method', mastery: 81, trend: 1.5, studentCount: 420, category: 'Science', skills: [
+        { name: 'Hypothesis Formation', mastery: 86, trend: 2.0, studentCount: 420 },
+        { name: 'Experimental Design', mastery: 78, trend: 1.2, studentCount: 400 },
+        { name: 'Data Collection', mastery: 84, trend: 1.8, studentCount: 410 },
+        { name: 'Drawing Conclusions', mastery: 76, trend: 0.8, studentCount: 390 },
+    ]},
+    { subject: 'Essay Writing', mastery: 85, trend: 4.0, studentCount: 610, category: 'Literacy', skills: [
+        { name: 'Thesis Development', mastery: 82, trend: 5.1, studentCount: 610 },
+        { name: 'Evidence Integration', mastery: 87, trend: 3.5, studentCount: 590 },
+        { name: 'Paragraph Structure', mastery: 89, trend: 2.8, studentCount: 600 },
+        { name: 'Grammar & Mechanics', mastery: 83, trend: 4.2, studentCount: 605 },
+    ]},
+    { subject: 'Geometry Proofs', mastery: 64, trend: -5.3, studentCount: 320, category: 'Math', skills: [
+        { name: 'Two-Column Proofs', mastery: 58, trend: -6.2, studentCount: 320 },
+        { name: 'Triangle Congruence', mastery: 70, trend: -3.8, studentCount: 310 },
+        { name: 'Parallel Lines & Angles', mastery: 72, trend: -2.1, studentCount: 300 },
+        { name: 'Circle Theorems', mastery: 55, trend: -8.5, studentCount: 280 },
+    ]},
+    { subject: 'US History', mastery: 79, trend: 0.8, studentCount: 480, category: 'Social Studies', skills: [
+        { name: 'Colonial Period', mastery: 84, trend: 1.2, studentCount: 480 },
+        { name: 'Civil War & Reconstruction', mastery: 81, trend: 0.5, studentCount: 470 },
+        { name: 'Primary Source Analysis', mastery: 76, trend: 2.1, studentCount: 460 },
+        { name: 'Modern Era (1945+)', mastery: 74, trend: -0.8, studentCount: 450 },
+    ]},
+    { subject: 'Photosynthesis', mastery: 76, trend: 2.3, studentCount: 380, category: 'Biology', skills: [
+        { name: 'Light Reactions', mastery: 72, trend: 3.1, studentCount: 380 },
+        { name: 'Calvin Cycle', mastery: 68, trend: 1.8, studentCount: 370 },
+        { name: 'Chloroplast Structure', mastery: 82, trend: 2.5, studentCount: 375 },
+        { name: 'Energy Conversion', mastery: 80, trend: 1.9, studentCount: 360 },
+    ]},
+    { subject: 'Quadratic Equations', mastery: 58, trend: -4.7, studentCount: 290, category: 'Algebra', skills: [
+        { name: 'Factoring', mastery: 62, trend: -3.8, studentCount: 290 },
+        { name: 'Quadratic Formula', mastery: 55, trend: -5.2, studentCount: 280 },
+        { name: 'Completing the Square', mastery: 48, trend: -7.1, studentCount: 270 },
+        { name: 'Graphing Parabolas', mastery: 65, trend: -2.5, studentCount: 285 },
+    ]},
+    { subject: 'Spanish Vocab', mastery: 91, trend: 1.1, studentCount: 260, category: 'Language', skills: [
+        { name: 'Core Vocabulary', mastery: 94, trend: 0.8, studentCount: 260 },
+        { name: 'Verb Conjugation', mastery: 88, trend: 1.5, studentCount: 255 },
+        { name: 'Reading Passages', mastery: 90, trend: 1.2, studentCount: 250 },
+        { name: 'Conversational Use', mastery: 92, trend: 0.9, studentCount: 245 },
+    ]},
+    { subject: 'Data Analysis', mastery: 70, trend: -1.8, studentCount: 350, category: 'Math', skills: [
+        { name: 'Reading Charts & Graphs', mastery: 78, trend: 0.5, studentCount: 350 },
+        { name: 'Mean/Median/Mode', mastery: 74, trend: -1.2, studentCount: 340 },
+        { name: 'Probability Basics', mastery: 65, trend: -3.5, studentCount: 330 },
+        { name: 'Data Interpretation', mastery: 62, trend: -2.8, studentCount: 320 },
+    ]},
+    { subject: 'Chemistry Concepts', mastery: 77, trend: 2.8, studentCount: 310, category: 'Science', skills: [
+        { name: 'Atomic Structure', mastery: 82, trend: 2.1, studentCount: 310 },
+        { name: 'Chemical Bonding', mastery: 75, trend: 3.5, studentCount: 300 },
+        { name: 'Balancing Equations', mastery: 70, trend: 2.2, studentCount: 290 },
+        { name: 'Periodic Table Trends', mastery: 80, trend: 3.1, studentCount: 305 },
+    ]},
+    { subject: 'Fraction Operations', mastery: 62, trend: -3.1, studentCount: 440, category: 'Math', skills: [
+        { name: 'Adding & Subtracting', mastery: 68, trend: -2.0, studentCount: 440 },
+        { name: 'Multiplying & Dividing', mastery: 60, trend: -3.5, studentCount: 430 },
+        { name: 'Mixed Numbers', mastery: 55, trend: -4.8, studentCount: 420 },
+        { name: 'Word Problems with Fractions', mastery: 58, trend: -3.2, studentCount: 410 },
+    ]},
+    { subject: 'Literary Analysis', mastery: 83, trend: 2.5, studentCount: 520, category: 'Literacy', skills: [
+        { name: 'Theme Identification', mastery: 86, trend: 2.8, studentCount: 520 },
+        { name: 'Character Analysis', mastery: 88, trend: 1.9, studentCount: 510 },
+        { name: 'Symbolism & Motif', mastery: 78, trend: 3.2, studentCount: 500 },
+        { name: 'Author\'s Purpose', mastery: 81, trend: 2.1, studentCount: 505 },
+    ]},
+    { subject: 'World Geography', mastery: 80, trend: 0.4, studentCount: 390, category: 'Social Studies', skills: [
+        { name: 'Physical Geography', mastery: 84, trend: 0.8, studentCount: 390 },
+        { name: 'Human Geography', mastery: 79, trend: 0.2, studentCount: 380 },
+        { name: 'Map Skills', mastery: 82, trend: 1.1, studentCount: 385 },
+        { name: 'Cultural Studies', mastery: 76, trend: -0.5, studentCount: 370 },
+    ]},
+    { subject: 'Coding & Logic', mastery: 74, trend: 5.2, studentCount: 180, category: 'STEM', skills: [
+        { name: 'Variables & Data Types', mastery: 82, trend: 4.8, studentCount: 180 },
+        { name: 'Loops & Conditionals', mastery: 76, trend: 5.5, studentCount: 175 },
+        { name: 'Functions & Decomposition', mastery: 68, trend: 6.1, studentCount: 170 },
+        { name: 'Debugging & Problem Solving', mastery: 70, trend: 4.5, studentCount: 165 },
+    ]},
 ];
 
 // ============== Store ==============

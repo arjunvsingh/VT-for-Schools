@@ -5,8 +5,9 @@ import TeacherTimeline from '@/components/teacher/TeacherTimeline';
 import { BackLink } from '@/components/navigation';
 import { NotesButton } from '@/components/ui/NotesPanel';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { Mail, Phone, Award, Star, AlertCircle, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Award, Star, AlertCircle, MessageSquare, TrendingUp } from 'lucide-react';
 import { useDataStore } from '@/lib/stores';
+import { PerformanceHistory } from '@/components/ui/PerformanceHistory';
 import { Marquee } from '@/components/ui/marquee';
 import { cn } from '@/lib/utils';
 
@@ -142,6 +143,21 @@ export default function TeacherPage({ params }: { params: { id: string } }) {
                         <p className="text-2xl font-mono mt-1 text-acid-lime">{rating}</p>
                     </div>
                 </div>
+
+                {/* Performance Trajectory */}
+                {teacher?.performanceHistory && teacher.performanceHistory.length > 0 && (
+                    <BentoCard title="Performance Trajectory" icon={<TrendingUp className="text-acid-lime" />} glow>
+                        <div className="mt-3">
+                            <PerformanceHistory
+                                data={teacher.performanceHistory}
+                                primaryLabel="Rating"
+                                height={180}
+                                domainMin={1}
+                                domainMax={5}
+                            />
+                        </div>
+                    </BentoCard>
+                )}
 
                 {/* Performance Issues - Only if any exist */}
                 {teacher?.performanceIssues && teacher.performanceIssues.length > 0 && (
