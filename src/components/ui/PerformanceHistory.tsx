@@ -33,13 +33,17 @@ export function PerformanceHistory({
         return <div className="w-full rounded-lg bg-white/5 animate-pulse" style={{ height }} />;
     }
 
-    // Calculate domain from data
-    const allValues = data.flatMap(d => [d.value, ...(d.secondary !== undefined ? [d.secondary] : [])]);
-    const minVal = domainMin ?? Math.floor(Math.min(...allValues) - 2);
-    const maxVal = domainMax ?? Math.ceil(Math.max(...allValues) + 2);
+    // Calculate separate domains for primary and secondary
+    const primaryValues = data.map(d => d.value);
+    const minVal = domainMin ?? Math.floor(Math.min(...primaryValues) - 2);
+    const maxVal = domainMax ?? Math.ceil(Math.max(...primaryValues) + 2);
 
     const eventPoints = data.filter(d => d.event);
     const hasSecondary = data.some(d => d.secondary !== undefined);
+
+    const secondaryValues = hasSecondary ? data.filter(d => d.secondary !== undefined).map(d => d.secondary!) : [];
+    const secMin = hasSecondary ? Math.floor(Math.min(...secondaryValues) - 3) : 0;
+    const secMax = hasSecondary ? Math.ceil(Math.max(...secondaryValues) + 3) : 100;
     const uid = `ph-${data[0]?.month}-${data.length}`;
 
     return (
@@ -66,11 +70,23 @@ export function PerformanceHistory({
                             tickLine={false}
                         />
                         <YAxis
+                            yAxisId="left"
                             domain={[minVal, maxVal]}
                             tick={{ fill: 'rgba(231,229,228,0.4)', fontSize: 10 }}
                             axisLine={false}
                             tickLine={false}
                         />
+                        {hasSecondary && (
+                            <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                domain={[secMin, secMax]}
+                                tick={{ fill: 'rgba(34,211,238,0.4)', fontSize: 10 }}
+                                axisLine={false}
+                                tickLine={false}
+                                tickFormatter={(v: number) => `${v}%`}
+                            />
+                        )}
                         <Tooltip
                             content={({ active, payload, label }) => {
                                 if (!active || !payload?.[0]) return null;
@@ -99,6 +115,7 @@ export function PerformanceHistory({
                             <Area
                                 type="monotone"
                                 dataKey="secondary"
+                                yAxisId="right"
                                 stroke="#22D3EE"
                                 strokeWidth={1.5}
                                 strokeDasharray="4 4"
@@ -110,6 +127,7 @@ export function PerformanceHistory({
                         <Area
                             type="monotone"
                             dataKey="value"
+                            yAxisId="left"
                             stroke="#D4F268"
                             strokeWidth={2}
                             fillOpacity={1}
@@ -123,6 +141,7 @@ export function PerformanceHistory({
                                 key={i}
                                 x={pt.month}
                                 y={pt.value}
+                                yAxisId="left"
                                 r={5}
                                 fill="#FB923C"
                                 stroke="#0C0A09"
