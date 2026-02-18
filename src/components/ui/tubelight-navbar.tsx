@@ -26,7 +26,7 @@ export function NavBar({ items, className }: NavBarProps) {
     if (url === "/schools" && pathname.startsWith("/school/")) return true
     if (url === "/teachers" && pathname.startsWith("/teacher/")) return true
     if (url === "/students" && pathname.startsWith("/student/")) return true
-    if (url === "/districts" && pathname.startsWith("/district")) return true
+    if (url.startsWith("/district") && pathname.startsWith("/district/")) return true
     return pathname.startsWith(url)
   }
 

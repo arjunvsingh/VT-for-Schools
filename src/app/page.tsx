@@ -4,21 +4,16 @@ import CaliforniaCubes from '@/components/visuals/CaliforniaCubes';
 import { BentoCard } from '@/components/ui/BentoCard';
 import { SystemHealthMonitor } from '@/components/ui/SystemHealthMonitor';
 import { ActivityFeed } from '@/components/ui/ActivityFeed';
-import { AlertTriangle, TrendingUp, TrendingDown, Users, GraduationCap, School, BarChart3 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useDataStore } from '@/lib/stores';
 import { useMemo } from 'react';
-import { cn } from '@/lib/utils';
 
 export default function Home() {
   // Get data for System Health Monitor
   const schools = useDataStore((state) => state.schools);
   const teachers = useDataStore((state) => state.teachers);
   const insights = useDataStore((state) => state.insights);
-  const getDistrictMetrics = useDataStore((state) => state.getDistrictMetrics);
-
-  const metrics = useMemo(() => getDistrictMetrics(), [getDistrictMetrics]);
-
   // Transform data for the health monitor
   const { healthSchools, healthTeachers } = useMemo(() => {
     // Transform Schools
@@ -55,55 +50,13 @@ export default function Home() {
     return { healthSchools: s, healthTeachers: t };
   }, [schools, teachers, insights]);
 
-  const kpis = [
-    { label: 'Students', value: metrics.totalStudents.toLocaleString(), icon: GraduationCap, color: 'text-cyan-400' },
-    { label: 'Schools', value: metrics.totalSchools, icon: School, color: 'text-acid-lime' },
-    { label: 'Avg Performance', value: `${metrics.avgPerformance}%`, icon: BarChart3, trend: metrics.performanceTrend, color: 'text-acid-lime' },
-    { label: 'Avg Attendance', value: `${metrics.avgAttendance}%`, icon: Users, trend: metrics.attendanceTrend, color: 'text-cyan-400' },
-    { label: 'At Risk', value: metrics.atRiskCount, icon: AlertTriangle, color: 'text-orange-400' },
-    { label: 'Avg GPA', value: metrics.avgGPA.toFixed(1), icon: TrendingUp, color: 'text-acid-lime' },
-  ];
-
   return (
-    <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8 flex flex-col gap-6">
+    <main className="min-h-screen overflow-hidden w-full pt-24 pb-8 px-4 md:px-6 lg:px-8">
 
-      {/* District KPI Strip */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="grid grid-cols-3 lg:grid-cols-6 gap-3"
-      >
-        {kpis.map((kpi, i) => {
-          const Icon = kpi.icon;
-          return (
-            <motion.div
-              key={kpi.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
-              className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-1.5"
-            >
-              <div className="flex items-center justify-between">
-                <Icon className={cn("w-3.5 h-3.5", kpi.color)} />
-                {kpi.trend !== undefined && (
-                  <div className={cn("flex items-center gap-0.5 text-[10px] font-mono", kpi.trend >= 0 ? "text-green-400" : "text-red-400")}>
-                    {kpi.trend >= 0 ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
-                    {Math.abs(kpi.trend)}%
-                  </div>
-                )}
-              </div>
-              <span className="text-lg font-bold font-mono">{kpi.value}</span>
-              <span className="text-[10px] text-off-white/40 uppercase tracking-widest">{kpi.label}</span>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
       {/* Left Column: Header + Map */}
-      <section className="lg:col-span-7 flex flex-col min-h-[500px] lg:h-[calc(100vh-20rem)] relative">
+      <section className="lg:col-span-7 flex flex-col h-[calc(100vh-14rem)] relative">
         <div className="flex flex-col gap-4 mb-8 z-10 pointer-events-none">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-tight">
             {['State of', 'California', 'Schools'].map((word, i) => (
@@ -147,7 +100,7 @@ export default function Home() {
       </section>
 
       {/* Right Column: Bento Stack with Early Warning + Activity Feed */}
-      <section className="lg:col-span-5 flex flex-col gap-6 lg:h-[calc(100vh-20rem)]">
+      <section className="lg:col-span-5 flex flex-col gap-6 lg:h-[calc(100vh-14rem)]">
 
         {/* System Overview Header */}
         <div className="flex items-center justify-between">
@@ -175,7 +128,7 @@ export default function Home() {
         </BentoCard>
 
         <BentoCard
-          className="min-h-[250px] flex-1"
+          className="min-h-0 flex-1"
           glow
         >
           <ActivityFeed showHeader={true} className="h-full" />

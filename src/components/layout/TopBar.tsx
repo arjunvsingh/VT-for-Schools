@@ -11,7 +11,7 @@ import { NavBar } from '@/components/ui/tubelight-navbar';
 
 const navItems = [
     { name: 'Dashboard', url: '/', icon: Home },
-    { name: 'Districts', url: '/districts', icon: Building2 },
+    { name: 'Districts', url: '/district/1', icon: Building2 },
     { name: 'Schools', url: '/schools', icon: GraduationCap },
     { name: 'Teachers', url: '/teachers', icon: Users },
     { name: 'Students', url: '/students', icon: BookOpen },
