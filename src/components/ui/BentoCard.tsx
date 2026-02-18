@@ -50,8 +50,8 @@ export function BentoCard({
             <div className="magic-bento-card__header z-10">
                 {icon && <div className="magic-bento-card__icon mb-2">{icon}</div>}
                 <div className="flex flex-col">
-                    {title && <h3 className="magic-bento-card__title font-serif italic text-xl">{title}</h3>}
-                    {description && <p className="magic-bento-card__description text-off-white/60 font-sans">{description}</p>}
+                    {title && <h3 className="magic-bento-card__title font-serif italic text-2xl">{title}</h3>}
+                    {description && <p className="magic-bento-card__description text-sm text-off-white/60 font-sans">{description}</p>}
                 </div>
             </div>
 

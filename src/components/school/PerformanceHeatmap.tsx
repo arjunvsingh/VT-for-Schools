@@ -23,7 +23,7 @@ export default function PerformanceHeatmap() {
     return (
         <div className="w-full h-full flex flex-col">
             <div className="flex justify-end mb-4">
-                <div className="flex items-center gap-2 text-xs text-off-white/40">
+                <div className="flex items-center gap-2 text-sm text-off-white/40">
                     <span>LOW</span>
                     <div className="w-16 h-2 rounded bg-gradient-to-r from-red-500/40 via-amber-400/35 to-emerald-400/40" />
                     <span>HIGH</span>
@@ -32,7 +32,7 @@ export default function PerformanceHeatmap() {
 
             <div className="flex-1 grid grid-cols-[auto_1fr] gap-4">
                 {/* Y-Axis Labels */}
-                <div className="flex flex-col justify-around text-xs font-mono text-off-white/60 text-right pr-2 border-r border-white/10">
+                <div className="flex flex-col justify-around text-sm font-mono text-off-white/60 text-right pr-2 border-r border-white/10">
                     {GRADES.map(g => <span key={g}>{g}</span>)}
                 </div>
 
@@ -40,7 +40,7 @@ export default function PerformanceHeatmap() {
                 <div className="grid grid-cols-6 gap-2">
                     {/* X-Axis Labels (Top) */}
                     {SUBJECTS.map(s => (
-                        <div key={s} className="text-center text-xs font-mono text-off-white/40">{s.slice(0, 3)}</div>
+                        <div key={s} className="text-center text-sm font-mono text-off-white/40">{s.slice(0, 3)}</div>
                     ))}
 
                     {/* Data Cells */}
@@ -63,7 +63,7 @@ export default function PerformanceHeatmap() {
                                         "hover:opacity-100 hover:scale-105 transition-all"
                                     )}
                                 >
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-xs font-bold text-off-white">
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-sm font-bold text-off-white">
                                         {cell.value}
                                     </div>
                                 </motion.div>

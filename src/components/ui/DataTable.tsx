@@ -123,7 +123,7 @@ export function DataTable<T extends object>({
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(0); }}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-4 py-2 text-sm text-off-white focus:outline-none focus:border-acid-lime/30 transition-colors placeholder:text-off-white/20"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-4 py-2 text-base text-off-white focus:outline-none focus:border-acid-lime/30 transition-colors placeholder:text-off-white/20"
           />
         </div>
       )}
@@ -141,7 +141,7 @@ export function DataTable<T extends object>({
                   <th
                     key={col.key}
                     className={cn(
-                      'text-[10px] uppercase tracking-wider text-off-white/40 font-medium',
+                      'text-xs uppercase tracking-wider text-off-white/40 font-medium',
                       compact ? 'px-3 py-2' : 'px-4 py-3',
                       col.align === 'center' && 'text-center',
                       col.align === 'right' && 'text-right',
@@ -182,7 +182,7 @@ export function DataTable<T extends object>({
                       <td
                         key={col.key}
                         className={cn(
-                          'text-sm text-off-white/90',
+                          'text-base text-off-white/90',
                           compact ? 'px-3 py-2' : 'px-4 py-3',
                           col.align === 'center' && 'text-center',
                           col.align === 'right' && 'text-right',
@@ -210,14 +210,14 @@ export function DataTable<T extends object>({
         {paginated.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-off-white/30">
             {emptyIcon}
-            <p className="text-sm mt-2">{emptyMessage}</p>
+            <p className="text-base mt-2">{emptyMessage}</p>
           </div>
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-off-white/40">
+        <div className="flex items-center justify-between text-sm text-off-white/40">
           <span>
             Showing {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, sorted.length)} of {sorted.length}
           </span>

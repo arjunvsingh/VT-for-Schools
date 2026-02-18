@@ -17,6 +17,7 @@ export default function StudentsPage() {
     const router = useRouter();
     const [filterSchool, setFilterSchool] = useState<string>('all');
     const [filterGrade, setFilterGrade] = useState<string>('all');
+    const [filterStatus, setFilterStatus] = useState<string>('all');
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
     // Sort: at-risk first, then by GPA descending
@@ -28,12 +29,15 @@ export default function StudentsPage() {
         if (filterGrade !== 'all') {
             filtered = filtered.filter(s => s.grade.toString() === filterGrade);
         }
+        if (filterStatus !== 'all') {
+            filtered = filtered.filter(s => s.status === filterStatus);
+        }
         return filtered.sort((a, b) => {
             if (a.status === 'at-risk' && b.status !== 'at-risk') return -1;
             if (b.status === 'at-risk' && a.status !== 'at-risk') return 1;
             return b.gpa - a.gpa;
         });
-    }, [students, filterSchool, filterGrade]);
+    }, [students, filterSchool, filterGrade, filterStatus]);
 
     const uniqueSchools = useMemo(() => {
         const schoolIds = [...new Set(students.map(s => s.schoolId))];
@@ -184,6 +188,16 @@ export default function StudentsPage() {
                             {uniqueGrades.map(grade => (
                                 <option key={grade} value={grade.toString()}>Grade {grade}</option>
                             ))}
+                        </select>
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-acid-lime/50"
+                        >
+                            <option value="all">All Statuses</option>
+                            <option value="at-risk">At Risk</option>
+                            <option value="on-track">On Track</option>
+                            <option value="excelling">Excelling</option>
                         </select>
 
                         {/* View Toggle */}

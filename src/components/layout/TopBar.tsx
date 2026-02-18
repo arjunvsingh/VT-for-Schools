@@ -11,7 +11,7 @@ import { NavBar } from '@/components/ui/tubelight-navbar';
 
 const navItems = [
     { name: 'Dashboard', url: '/', icon: Home },
-    { name: 'Districts', url: '/district/1', icon: Building2 },
+    { name: 'Districts', url: '/districts', icon: Building2 },
     { name: 'Schools', url: '/schools', icon: GraduationCap },
     { name: 'Teachers', url: '/teachers', icon: Users },
     { name: 'Students', url: '/students', icon: BookOpen },
@@ -41,7 +41,7 @@ export function TopBar() {
     }, []);
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 pointer-events-none mix-blend-difference text-off-white">
+        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 pointer-events-none text-off-white bg-gradient-to-b from-stone-black via-stone-black/80 to-transparent">
             <Link href="/" className="pointer-events-auto flex items-center gap-4 cursor-pointer">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-black border border-white/10">
                     <div className="h-4 w-4 rounded-full bg-acid-lime" />

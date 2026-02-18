@@ -35,7 +35,7 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05, duration: 0.4 }}
-            className="group relative h-[320px] w-full"
+            className="group relative h-[380px] w-full"
             onMouseMove={handleMouseMove}
             onMouseLeave={(e) => {
                 e.currentTarget.style.setProperty('--glow-intensity', '0');
@@ -72,7 +72,7 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
                     />
 
                     {/* Status Badge */}
-                    <div className={cn("absolute top-4 right-4 px-2 py-1 rounded-full border text-[10px] font-mono uppercase tracking-wider flex items-center gap-1.5", statusBg, statusColor)}>
+                    <div className={cn("absolute top-4 right-4 px-2 py-1 rounded-full border text-xs font-mono uppercase tracking-wider flex items-center gap-1.5", statusBg, statusColor)}>
                         <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", school.status === 'alert' ? 'bg-red-500' : school.status === 'warning' ? 'bg-orange-500' : 'bg-acid-lime')} />
                         {school.status}
                     </div>
@@ -89,7 +89,7 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
                         <h3 className="font-serif text-xl text-off-white group-hover:text-acid-lime transition-colors truncate">
                             {school.name}
                         </h3>
-                        <p className="text-xs text-off-white/40 mt-1 flex items-center gap-2">
+                        <p className="text-sm text-off-white/40 mt-1 flex items-center gap-2">
                             <span>Principal {school.principal}</span>
                             <span>•</span>
                             <span>Grade {school.grade}</span>
@@ -97,7 +97,7 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-3 mb-auto">
+                    <div className="grid grid-cols-2 gap-2 mb-auto">
                         <div className="p-2 rounded bg-white/5 border border-white/5">
                             <div className="flex items-center gap-1.5 text-off-white/40 mb-1">
                                 <TrendingUp className="w-3 h-3" />
@@ -109,11 +109,29 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
                         </div>
                         <div className="p-2 rounded bg-white/5 border border-white/5">
                             <div className="flex items-center gap-1.5 text-off-white/40 mb-1">
-                                <Users className="w-3 h-3" />
+                                <GraduationCap className="w-3 h-3" />
                                 <span className="text-[10px] uppercase">Students</span>
                             </div>
                             <span className="text-lg font-mono font-medium text-off-white">
                                 {school.students}
+                            </span>
+                        </div>
+                        <div className="p-2 rounded bg-white/5 border border-white/5">
+                            <div className="flex items-center gap-1.5 text-off-white/40 mb-1">
+                                <Users className="w-3 h-3" />
+                                <span className="text-[10px] uppercase">Teachers</span>
+                            </div>
+                            <span className="text-lg font-mono font-medium text-off-white">
+                                {school.teachers}
+                            </span>
+                        </div>
+                        <div className="p-2 rounded bg-white/5 border border-white/5">
+                            <div className="flex items-center gap-1.5 text-off-white/40 mb-1">
+                                <AlertTriangle className="w-3 h-3" />
+                                <span className="text-[10px] uppercase">Attend</span>
+                            </div>
+                            <span className={cn("text-lg font-mono font-medium", school.attendance >= 92 ? "text-acid-lime" : school.attendance >= 88 ? "text-cyan-400" : "text-orange-400")}>
+                                {school.attendance}%
                             </span>
                         </div>
                     </div>
@@ -121,7 +139,7 @@ export function SchoolCard({ school, index }: SchoolCardProps) {
                     {/* Action */}
                     <Link
                         href={`/school/${school.id}`}
-                        className="mt-4 w-full py-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all text-xs text-off-white group-hover:text-acid-lime"
+                        className="mt-4 w-full py-2 flex items-center justify-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all text-sm text-off-white group-hover:text-acid-lime"
                     >
                         <span>View Details</span>
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

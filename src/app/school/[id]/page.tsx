@@ -9,7 +9,7 @@ import PerformanceHeatmap from '@/components/school/PerformanceHeatmap';
 import ProjectionGraph from '@/components/school/ProjectionGraph';
 import { GoalsDashboard } from '@/components/school/GoalsDashboard';
 import { ActivityTrackerPanel } from '@/components/school/ActivityTrackerPanel';
-import { BackLink } from '@/components/navigation';
+import { Breadcrumb } from '@/components/navigation';
 import { Users, Zap, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useDataStore } from '@/lib/stores';
@@ -28,24 +28,42 @@ export default function SchoolPage({ params }: { params: { id: string } }) {
     };
 
     // Fallback for invalid school ID
-    const schoolName = school?.name ?? 'Unknown School';
-    const principal = school?.principal ?? 'N/A';
-    const districtId = school?.districtId ?? '1';
-    const grade = school?.grade ?? 'N/A';
-    const studentCount = school?.students ?? 0;
-    const teacherCount = school?.teachers ?? 0;
-    const attendance = school?.attendance ?? 0;
+    if (!school) {
+        return (
+            <PageTransition className="p-4 md:p-8 pt-48 min-h-screen flex flex-col items-center justify-center max-w-7xl mx-auto">
+                <div className="text-center flex flex-col items-center gap-4">
+                    <div className="text-6xl font-serif italic text-off-white/20">?</div>
+                    <h1 className="text-2xl font-medium text-off-white">School not found</h1>
+                    <p className="text-off-white/50">No school exists with this identifier.</p>
+                    <Link href="/schools" className="mt-4 px-5 py-2.5 rounded-full bg-acid-lime text-stone-black font-semibold text-sm hover:bg-acid-lime/90 transition">
+                        View all schools
+                    </Link>
+                </div>
+            </PageTransition>
+        );
+    }
+
+    const schoolName = school.name;
+    const principal = school.principal;
+    const districtId = school.districtId;
+    const grade = school.grade;
+    const studentCount = school.students;
+    const teacherCount = school.teachers;
+    const attendance = school.attendance;
 
     return (
         <PageTransition className="p-4 md:p-8 pt-48 min-h-screen flex flex-col gap-8 max-w-7xl mx-auto">
 
             {/* Header */}
             <header className="flex flex-col gap-4">
-                <BackLink href={`/district/${districtId}`} label="Back to District" />
+                <Breadcrumb items={[
+                    { label: 'Schools', href: '/schools' },
+                    { label: schoolName, href: `/school/${params.id}` },
+                ]} />
                 <div className="flex items-end justify-between border-b border-white/10 pb-6">
                     <div className="flex flex-col gap-1">
                         <h1 className="font-serif text-5xl italic">{schoolName}</h1>
-                        <p className="text-off-white/60 font-mono text-sm">ID: {params.id} • PRINCIPAL: {principal}</p>
+                        <p className="text-off-white/60 font-mono text-sm">PRINCIPAL: {principal}</p>
                     </div>
                     <div className="flex items-center gap-4">
                         {/* Activity Button */}

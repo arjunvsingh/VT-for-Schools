@@ -32,13 +32,13 @@ export default function TeacherTimeline({ timeline = [] }: TeacherTimelineProps)
                             <div className="absolute left-[21px] top-1.5 w-1.5 h-1.5 rounded-full bg-acid-lime outline outline-4 outline-stone-black" />
 
                             <div className="flex flex-col gap-1">
-                                <span className="text-xs font-mono text-off-white/40">{event.year}</span>
-                                <h4 className="text-lg font-bold">{event.title}</h4>
-                                <p className="text-sm text-off-white/60 max-w-sm">{event.text}</p>
+                                <span className="text-sm font-mono text-off-white/40">{event.year}</span>
+                                <h4 className="text-xl font-bold">{event.title}</h4>
+                                <p className="text-base text-off-white/60 max-w-sm">{event.text}</p>
                             </div>
                         </motion.div>
                     )) : (
-                        <div className="pl-12 text-sm text-off-white/40 italic">
+                        <div className="pl-12 text-base text-off-white/40 italic">
                             No timeline events recorded.
                         </div>
                     )}

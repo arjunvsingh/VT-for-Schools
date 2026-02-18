@@ -419,12 +419,20 @@ export default function AnalyticsPage() {
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                 <XAxis
                                     dataKey="subject"
-                                    tick={{ fill: 'rgba(231,229,228,0.4)', fontSize: 9 }}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    tick={(props: any) => {
+                                        const { x, y, payload } = props;
+                                        const label = payload.value.length > 14 ? payload.value.slice(0, 12) + '...' : payload.value;
+                                        return (
+                                            <text x={x} y={y + 8} textAnchor="end" fill="rgba(231,229,228,0.4)" fontSize={9} transform={`rotate(-45, ${x}, ${y + 8})`}>
+                                                {label}
+                                            </text>
+                                        );
+                                    }}
                                     axisLine={false}
                                     tickLine={false}
-                                    angle={-35}
-                                    textAnchor="end"
-                                    height={60}
+                                    height={70}
+                                    interval={0}
                                 />
                                 <YAxis domain={[0, 100]} tick={{ fill: 'rgba(231,229,228,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
                                 <Tooltip

@@ -31,8 +31,8 @@ const typeIcons = {
     ai: <Sparkles className="w-4 h-4 text-acid-lime" />,
 };
 
-// Mock AI responses for natural language queries
-function getAIResponse(query: string): SearchResult | null {
+// AI responses using live data counts
+function getAIResponse(query: string, counts: { atRisk: number; flagged: number; totalSchools: number; avgPerformance: number }): SearchResult | null {
     const lowerQuery = query.toLowerCase();
 
     if (lowerQuery.includes('at-risk') || lowerQuery.includes('at risk') || lowerQuery.includes('struggling')) {
@@ -40,21 +40,21 @@ function getAIResponse(query: string): SearchResult | null {
             id: 'ai-risk',
             type: 'ai',
             title: 'Show at-risk students',
-            subtitle: '2 students need attention',
+            subtitle: `${counts.atRisk} student${counts.atRisk !== 1 ? 's' : ''} need attention`,
             icon: <AlertTriangle className="w-4 h-4 text-orange-400" />,
-            href: '/students?filter=at-risk',
+            href: '/students',
             highlight: true,
         };
     }
 
-    if (lowerQuery.includes('flagged') || lowerQuery.includes('need') && lowerQuery.includes('support')) {
+    if (lowerQuery.includes('flagged') || (lowerQuery.includes('need') && lowerQuery.includes('support'))) {
         return {
             id: 'ai-flagged',
             type: 'ai',
             title: 'Show flagged teachers',
-            subtitle: '2 teachers need attention',
+            subtitle: `${counts.flagged} teacher${counts.flagged !== 1 ? 's' : ''} need attention`,
             icon: <AlertTriangle className="w-4 h-4 text-orange-400" />,
-            href: '/teachers?filter=flagged',
+            href: '/teachers',
             highlight: true,
         };
     }
@@ -63,10 +63,10 @@ function getAIResponse(query: string): SearchResult | null {
         return {
             id: 'ai-compare',
             type: 'ai',
-            title: 'Open comparison mode',
-            subtitle: 'Compare schools, teachers, or students',
+            title: 'Compare schools on Analytics',
+            subtitle: 'View side-by-side performance metrics',
             icon: <Sparkles className="w-4 h-4 text-acid-lime" />,
-            action: () => console.log('Compare mode coming soon'),
+            href: '/analytics',
             highlight: true,
         };
     }
@@ -75,10 +75,22 @@ function getAIResponse(query: string): SearchResult | null {
         return {
             id: 'ai-district',
             type: 'ai',
-            title: 'District 1 is performing well',
-            subtitle: '88% avg performance, 5 schools operational',
+            title: `District performing at ${counts.avgPerformance}%`,
+            subtitle: `${counts.totalSchools} schools operational`,
             icon: <Sparkles className="w-4 h-4 text-acid-lime" />,
             href: '/district/1',
+            highlight: true,
+        };
+    }
+
+    if (lowerQuery.includes('analytics') || lowerQuery.includes('metrics') || lowerQuery.includes('performance')) {
+        return {
+            id: 'ai-analytics',
+            type: 'ai',
+            title: 'View District Analytics',
+            subtitle: 'KPIs, trends, and subject mastery breakdown',
+            icon: <Sparkles className="w-4 h-4 text-acid-lime" />,
+            href: '/analytics',
             highlight: true,
         };
     }
@@ -102,13 +114,23 @@ export function CommandBar() {
         }
     }, [isOpen]);
 
+    // Compute live counts for AI responses
+    const aiCounts = useMemo(() => ({
+        atRisk: students.filter(s => s.status === 'at-risk').length,
+        flagged: teachers.filter(t => t.status === 'flagged').length,
+        totalSchools: schools.length,
+        avgPerformance: Math.round(schools.reduce((sum, s) => sum + s.performance, 0) / (schools.length || 1)),
+    }), [students, teachers, schools]);
+
     // Generate search results
     const results = useMemo((): SearchResult[] => {
         if (!query.trim()) {
             // Show quick actions when no query
             return [
+                { id: 'quick-schools', type: 'action', title: 'View all schools', href: '/schools', icon: typeIcons.school },
                 { id: 'quick-teachers', type: 'action', title: 'View all teachers', href: '/teachers', icon: typeIcons.teacher },
                 { id: 'quick-students', type: 'action', title: 'View all students', href: '/students', icon: typeIcons.student },
+                { id: 'quick-analytics', type: 'action', title: 'View analytics', href: '/analytics', icon: typeIcons.ai },
                 { id: 'quick-district', type: 'action', title: 'View district overview', href: '/district/1', icon: typeIcons.district },
             ];
         }
@@ -117,7 +139,7 @@ export function CommandBar() {
         const lowerQuery = query.toLowerCase();
 
         // Check for AI response first
-        const aiResponse = getAIResponse(query);
+        const aiResponse = getAIResponse(query, aiCounts);
         if (aiResponse) {
             searchResults.push(aiResponse);
         }
@@ -170,7 +192,7 @@ export function CommandBar() {
             });
 
         return searchResults.slice(0, 8);
-    }, [query, schools, teachers, students]);
+    }, [query, schools, teachers, students, aiCounts]);
 
     const handleSelect = (result: SearchResult) => {
         if (result.action) {

@@ -71,7 +71,7 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
             >
                 <History className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform" />
                 {interventions.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-acid-lime text-stone-black text-[10px] font-bold flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-acid-lime text-stone-black text-xs font-bold flex items-center justify-center">
                         {interventions.length}
                     </span>
                 )}
@@ -122,7 +122,7 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                                         </div>
                                         <div>
                                             <h2 className="font-serif text-2xl italic text-off-white">Activity</h2>
-                                            <p className="text-sm text-off-white/50">{interventions.length} actions</p>
+                                            <p className="text-base text-off-white/50">{interventions.length} actions</p>
                                         </div>
                                     </div>
                                     <button
@@ -145,8 +145,8 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                                             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 flex items-center justify-center">
                                                 <History className="w-10 h-10 text-off-white/30" />
                                             </div>
-                                            <p className="text-xl font-medium text-off-white/60">No actions yet</p>
-                                            <p className="text-sm text-off-white/40 mt-2 max-w-[200px] mx-auto">
+                                            <p className="text-2xl font-medium text-off-white/60">No actions yet</p>
+                                            <p className="text-base text-off-white/40 mt-2 max-w-[200px] mx-auto">
                                                 Complete an insight action to see your history here
                                             </p>
                                         </motion.div>
@@ -173,10 +173,10 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                                                             <span className="font-medium text-off-white">{info.label}</span>
                                                             {statusIcon(intervention.status)}
                                                         </div>
-                                                        <p className="text-sm text-off-white/50 truncate">
+                                                        <p className="text-base text-off-white/50 truncate">
                                                             {intervention.entityName}
                                                         </p>
-                                                        <p className="text-xs text-off-white/30 mt-2">
+                                                        <p className="text-sm text-off-white/30 mt-2">
                                                             {formatTime(intervention.createdAt)}
                                                         </p>
                                                     </div>
@@ -193,7 +193,7 @@ export function ActivityTrackerPanel({ schoolId }: ActivityTrackerPanelProps) {
                                     transition={{ delay: 0.4 }}
                                     className="p-4 border-t border-white/10 bg-stone-black/30"
                                 >
-                                    <p className="text-xs text-center text-off-white/30">
+                                    <p className="text-sm text-center text-off-white/30">
                                         Actions are logged for compliance
                                     </p>
                                 </motion.div>

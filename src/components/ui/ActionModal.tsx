@@ -93,8 +93,8 @@ On behalf of the Central Valley Unified School District, we are delighted to for
 ${achievementSection}
 
 ${ctx.entityType === 'teacher'
-    ? 'Your commitment to your students is evident in the data — and more importantly, in the lives you are shaping. The district is fortunate to have educators of your caliber, and we want you to know that your efforts are seen and deeply valued.'
-    : 'Your hard work is paying off and we want you to know that your teachers, your school, and the entire district are proud of what you have accomplished. Keep reaching for excellence — we are here to support you every step of the way.'}
+                        ? 'Your commitment to your students is evident in the data — and more importantly, in the lives you are shaping. The district is fortunate to have educators of your caliber, and we want you to know that your efforts are seen and deeply valued.'
+                        : 'Your hard work is paying off and we want you to know that your teachers, your school, and the entire district are proud of what you have accomplished. Keep reaching for excellence — we are here to support you every step of the way.'}
 
 This recognition will be added to your permanent record and shared during our next district assembly.
 
@@ -328,8 +328,8 @@ export function ActionModal({ isOpen, onClose, type, context, onComplete }: Acti
                             <div className="flex items-center gap-3">
                                 <span className="text-lg">{info.icon}</span>
                                 <div>
-                                    <h2 className="text-base font-medium text-off-white">{info.label}</h2>
-                                    <p className="text-xs text-off-white/40">{info.description}</p>
+                                    <h2 className="text-lg font-medium text-off-white">{info.label}</h2>
+                                    <p className="text-sm text-off-white/40">{info.description}</p>
                                 </div>
                             </div>
                             <button
@@ -345,27 +345,27 @@ export function ActionModal({ isOpen, onClose, type, context, onComplete }: Acti
                             <div className="px-6 py-4 flex flex-col gap-4">
                                 {/* Subject */}
                                 <div>
-                                    <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Subject</label>
+                                    <label className="text-xs uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Subject</label>
                                     <input
                                         value={subject}
                                         onChange={(e) => setSubject(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white focus:outline-none focus:border-acid-lime/50 transition-colors"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-base text-off-white focus:outline-none focus:border-acid-lime/50 transition-colors"
                                     />
                                 </div>
 
                                 {/* Content */}
                                 <div>
-                                    <label className="text-[10px] uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Message</label>
+                                    <label className="text-xs uppercase tracking-wider text-off-white/30 font-medium mb-1 block">Message</label>
                                     <textarea
                                         value={body}
                                         onChange={(e) => setBody(e.target.value)}
                                         rows={12}
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-off-white leading-relaxed focus:outline-none focus:border-acid-lime/50 transition-colors resize-none"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-base text-off-white leading-relaxed focus:outline-none focus:border-acid-lime/50 transition-colors resize-none"
                                     />
                                 </div>
 
                                 {/* Recipient Tag */}
-                                <div className="flex items-center gap-2 text-xs text-off-white/40">
+                                <div className="flex items-center gap-2 text-sm text-off-white/40">
                                     <span className="px-2 py-1 rounded-md bg-white/5 border border-white/5">
                                         {context.entityType}: {context.entityName}
                                     </span>
@@ -377,7 +377,7 @@ export function ActionModal({ isOpen, onClose, type, context, onComplete }: Acti
                         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/5">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm text-off-white/60 hover:text-off-white rounded-lg hover:bg-white/5 transition-colors"
+                                className="px-4 py-2 text-base text-off-white/60 hover:text-off-white rounded-lg hover:bg-white/5 transition-colors"
                             >
                                 Cancel
                             </button>
@@ -387,7 +387,7 @@ export function ActionModal({ isOpen, onClose, type, context, onComplete }: Acti
                                 whileHover={{ scale: sendState === 'idle' ? 1.02 : 1 }}
                                 whileTap={{ scale: sendState === 'idle' ? 0.98 : 1 }}
                                 className={cn(
-                                    'flex items-center gap-2 px-5 py-2 rounded-lg font-medium text-sm transition-all',
+                                    'flex items-center gap-2 px-5 py-2 rounded-lg font-medium text-base transition-all',
                                     sendState === 'sent'
                                         ? 'bg-emerald-500 text-white'
                                         : 'bg-acid-lime text-stone-black hover:bg-acid-lime/90'

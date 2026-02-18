@@ -2,10 +2,11 @@
 import { PageTransition } from '@/components/layout/PageTransition';
 import { BentoCard } from '@/components/ui/BentoCard';
 import TeacherTimeline from '@/components/teacher/TeacherTimeline';
-import { BackLink } from '@/components/navigation';
+import { Breadcrumb } from '@/components/navigation';
 import { NotesButton } from '@/components/ui/NotesPanel';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { Mail, Phone, Award, Star, AlertCircle, MessageSquare, TrendingUp } from 'lucide-react';
+import { Mail, Phone, Award, Star, AlertCircle, MessageSquare, TrendingUp, Users } from 'lucide-react';
+import Link from 'next/link';
 import { useDataStore } from '@/lib/stores';
 import { PerformanceHistory } from '@/components/ui/PerformanceHistory';
 import { Marquee } from '@/components/ui/marquee';
@@ -13,26 +14,46 @@ import { cn } from '@/lib/utils';
 
 export default function TeacherPage({ params }: { params: { id: string } }) {
     const teacher = useDataStore((state) => state.getTeacher(params.id));
+    const schools = useDataStore((state) => state.schools);
 
-    // Fallback for invalid teacher ID
-    const teacherName = teacher?.name ?? 'Unknown Teacher';
-    const initials = teacher?.initials ?? '??';
-    const role = teacher?.role ?? 'Teacher';
-    const schoolId = teacher?.schoolId ?? 's1';
-    const tenure = teacher?.tenure ?? 0;
-    const classes = teacher?.classes ?? 0;
-    const studentCount = teacher?.studentCount ?? 0;
-    const rating = teacher?.rating ?? 0;
-    const awards = teacher?.awards ?? [];
-    const status = teacher?.status ?? 'inactive';
-    const feedback = teacher?.studentFeedback ?? [];
+    if (!teacher) {
+        return (
+            <PageTransition className="p-4 md:p-8 pt-48 min-h-screen flex flex-col items-center justify-center max-w-7xl mx-auto">
+                <div className="text-center flex flex-col items-center gap-4">
+                    <Users className="w-12 h-12 text-off-white/20" />
+                    <h1 className="text-2xl font-medium text-off-white">Teacher not found</h1>
+                    <p className="text-off-white/50">No teacher exists with this identifier.</p>
+                    <Link href="/teachers" className="mt-4 px-5 py-2.5 rounded-full bg-acid-lime text-stone-black font-semibold text-sm hover:bg-acid-lime/90 transition">
+                        View all teachers
+                    </Link>
+                </div>
+            </PageTransition>
+        );
+    }
+
+    const teacherName = teacher.name;
+    const initials = teacher.initials;
+    const role = teacher.role;
+    const schoolId = teacher.schoolId;
+    const schoolName = schools[schoolId]?.name ?? 'School';
+    const tenure = teacher.tenure;
+    const classes = teacher.classes;
+    const studentCount = teacher.studentCount;
+    const rating = teacher.rating;
+    const awards = teacher.awards;
+    const status = teacher.status;
+    const feedback = teacher.studentFeedback ?? [];
 
     return (
         <PageTransition className="p-4 md:p-8 pt-28 md:pt-36 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto items-start">
 
             {/* Left Profile Sidebar */}
             <div className="lg:col-span-4 flex flex-col gap-6">
-                <BackLink href={`/school/${schoolId}`} label="Back to School" />
+                <Breadcrumb items={[
+                    { label: 'Teachers', href: '/teachers' },
+                    { label: schoolName, href: `/school/${schoolId}` },
+                    { label: teacherName, href: `/teacher/${params.id}` },
+                ]} />
 
                 <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center text-center gap-4">
                     <div className="w-32 h-32 rounded-full border-2 border-acid-lime p-1">
