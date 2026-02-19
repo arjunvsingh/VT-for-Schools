@@ -202,7 +202,7 @@ export function ActivityFeed({
             )}
 
             {/* Activity list */}
-            <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1">
+            <div data-lenis-prevent className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1">
                 <AnimatePresence mode="popLayout">
                     {recentActivities.map((item, index) => (
                         <ActivityCard

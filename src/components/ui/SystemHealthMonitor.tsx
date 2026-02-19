@@ -165,7 +165,7 @@ export function SystemHealthMonitor({ schools, teachers, className }: SystemHeal
 
 
             {/* List - Scrollable Area */}
-            <div className="flex-1 overflow-y-auto min-h-0 pr-1 space-y-2 custom-scrollbar">
+            <div data-lenis-prevent className="flex-1 overflow-y-auto min-h-0 pr-1 space-y-2 custom-scrollbar">
                 <AnimatePresence mode="popLayout">
                     {activeList.map((item, i) => (
                         <motion.div

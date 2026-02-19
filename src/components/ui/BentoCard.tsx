@@ -55,7 +55,7 @@ export function BentoCard({
                 </div>
             </div>
 
-            <div className="magic-bento-card__content z-10 mt-4 flex-1 min-h-0 overflow-hidden">
+            <div className="magic-bento-card__content z-10 mt-4 flex-1 min-h-0 overflow-auto">
                 {children}
             </div>
 
