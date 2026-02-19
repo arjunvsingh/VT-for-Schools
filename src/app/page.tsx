@@ -51,12 +51,12 @@ export default function Home() {
   }, [schools, teachers, insights]);
 
   return (
-    <main className="min-h-screen overflow-hidden w-full pt-24 pb-8 px-4 md:px-6 lg:px-8">
+    <main className="min-h-screen w-full pt-24 pb-8 px-4 md:px-6 lg:px-8">
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
       {/* Left Column: Header + Map */}
-      <section className="lg:col-span-7 flex flex-col h-[calc(100vh-14rem)] relative">
+      <section className="lg:col-span-7 flex flex-col min-h-[calc(100vh-14rem)] relative">
         <div className="flex flex-col gap-4 mb-8 z-10 pointer-events-none">
           <h1 className="font-serif text-5xl md:text-7xl font-light leading-tight">
             {['State of', 'California', 'Schools'].map((word, i) => (
@@ -82,7 +82,7 @@ export default function Home() {
         </div>
 
         {/* Map Container */}
-        <div className="flex-1 w-full relative perspective-1000 flex items-center justify-center">
+        <div className="flex-1 w-full relative perspective-1000 flex items-start justify-center -mt-24 translate-x-36">
           <CaliforniaCubes
             gridSize={20}
             cubeSize={32}
@@ -100,7 +100,7 @@ export default function Home() {
       </section>
 
       {/* Right Column: Bento Stack with Early Warning + Activity Feed */}
-      <section className="lg:col-span-5 flex flex-col gap-6 lg:h-[calc(100vh-14rem)]">
+      <section className="lg:col-span-5 flex flex-col gap-6 lg:min-h-[calc(100vh-14rem)]">
 
         {/* System Overview Header */}
         <div className="flex items-center justify-between">
